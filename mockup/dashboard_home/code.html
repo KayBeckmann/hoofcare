@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="light" lang="de"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hufpflege Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for horizontal scroll areas if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#ffffff",
+                      "on-surface": "#1c1c19",
+                      "secondary-fixed-dim": "#ffb959",
+                      "on-tertiary-fixed": "#001e2d",
+                      "on-secondary-fixed": "#2a1800",
+                      "on-primary-fixed": "#00210e",
+                      "tertiary-container": "#275a75",
+                      "on-primary-container": "#a1d5ad",
+                      "surface-tint": "#386847",
+                      "primary-fixed-dim": "#9fd3aa",
+                      "secondary-fixed": "#ffddb6",
+                      "tertiary-fixed-dim": "#9dcdec",
+                      "inverse-primary": "#9fd3aa",
+                      "tertiary": "#04425c",
+                      "surface-container-highest": "#e5e2dd",
+                      "background": "#fcf9f4",
+                      "primary-container": "#2e5e3e",
+                      "primary-fixed": "#baefc5",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#31302d",
+                      "surface-bright": "#fcf9f4",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#643f00",
+                      "surface-dim": "#dcdad5",
+                      "secondary-container": "#ffb959",
+                      "on-tertiary-container": "#a0d0ef",
+                      "on-background": "#1c1c19",
+                      "surface-container-high": "#ebe8e3",
+                      "surface": "#fcf9f4",
+                      "on-tertiary-fixed-variant": "#154c66",
+                      "tertiary-fixed": "#c5e7ff",
+                      "surface-variant": "#e5e2dd",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f6f3ee",
+                      "on-primary-fixed-variant": "#1f5031",
+                      "outline-variant": "#c1c9bf",
+                      "inverse-on-surface": "#f3f0eb",
+                      "surface-container": "#f0ede9",
+                      "secondary": "#845400",
+                      "outline": "#717971",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#744900",
+                      "primary": "#154628",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#414942"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "container-padding": "16px",
+                      "lg": "24px",
+                      "card-gap": "12px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Nunito Sans"],
+                      "label-md": ["Nunito Sans"],
+                      "label-lg": ["Nunito Sans"],
+                      "body-md": ["Nunito Sans"],
+                      "headline-lg": ["Nunito Sans"],
+                      "title-lg": ["Nunito Sans"],
+                      "headline-lg-mobile": ["Nunito Sans"],
+                      "display-lg": ["Nunito Sans"]
+              },
+              "fontSize": {
+                      "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24 selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Area / Header -->
+<header class="px-container-padding pt-8 pb-4 flex justify-between items-center bg-surface sticky top-0 z-40 shadow-sm md:shadow-none transition-shadow duration-300" id="mainHeader">
+<div>
+<p class="font-label-lg text-label-lg text-on-surface-variant mb-1">Guten Morgen,</p>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary">Dr. Weber</h1>
+</div>
+<div class="h-12 w-12 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant overflow-hidden">
+<!-- Placeholder profile / logo -->
+<img class="w-full h-full object-cover" data-alt="A close up, high quality photograph of a professional farrier or equine veterinarian at work. The lighting is soft morning sunlight, casting a warm glow over a rustic stable environment. The color palette features deep forest greens, crisp whites, and warm amber tones, perfectly aligning with a modern, trusted expert aesthetic. The mood is calm, reliable, and grounded in craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpK3w8yn85iyyQEst-f2yDLrecUuT_TXTuMUuc4Nh1L-9MptqxKL3PofDauiX7dOZmujYzY1cmz2mzBLjyCnK_xNm0GKJDgWV4J0Dp_POoHPijMYLDZrMq47cda_FS6U7R1JBej9B63N_KQco-e52eXo-ztwRdRnF7-3Ialoflm4Jl2Hhsd1GLWodvP6GVQq1VnJMzqJpDQIUhcIreIBZfa6YpDXYUjK82TJKT8TZBCmXjSqL_1nXUXeYtmy3v1SZMs_xfGWCKLVk"/>
+</div>
+</header>
+<main class="px-container-padding max-w-4xl mx-auto space-y-xl pt-4">
+<!-- Bento Grid Layout for Dashboard Info -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap">
+<!-- Next Appointment Card (Main Focus) -->
+<section class="md:col-span-8 bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_2px_8px_rgba(21,70,40,0.08)] relative overflow-hidden group">
+<!-- Decorative subtle gradient blob for modern feel -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-container opacity-20 rounded-full blur-2xl transition-transform duration-500 group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<div>
+<h2 class="font-title-lg text-title-lg text-on-surface">Nächster Termin</h2>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center mt-xs">
+<span class="material-symbols-outlined text-[16px] mr-1">calendar_today</span>
+                            Heute, 09:30 Uhr
+                        </p>
+</div>
+<!-- Status Badge: Geplant -->
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md px-3 py-1 rounded-full border border-tertiary-fixed-dim inline-flex items-center">
+                        Geplant
+                    </span>
+</div>
+<div class="flex flex-col sm:flex-row gap-md relative z-10">
+<!-- Thumbnail/Horse image -->
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 shadow-sm border border-outline-variant hidden sm:block">
+<img class="w-full h-full object-cover" data-alt="A clear, bright photograph of a healthy, majestic brown horse standing calmly in a well-lit green pasture. The image is framed to emphasize the horse's head and strong shoulders. The natural sunlight highlights the sleek coat. The background is a soft blur of deep forest greens and warm amber hues, matching a professional and natural equine care identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCK_vLbSRCSh3Q01L5Qok8Nmv3GoTQUyQToQj_kfIqF6A-JT79ufwz62h3gQQEHkqSpkEveW9eepgybLGgrg9iWlAH58oSRrRz-DsLIwefEl51RpTH6udFgckoJABesTFHzvK0sQvPv763-WFFyrdtIBLQxBAyTUYrkodV1VusHT3u5YJoi5XeiDJ4Nf3n4xThE949foWXvzQSoJ9ljGO6d4H2RgVdNTHxpUm53qX1x1xvkY7lWvVuzgxh6FZwtf1r6-5bRchdx2uQ"/>
+</div>
+<div class="flex-1 space-y-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">pets</span>
+<span class="font-label-lg text-label-lg text-on-surface">Luna (Warmblut)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Familie Schmidt</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">location_on</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Reiterhof Wiesenblick, Stall 3</span>
+</div>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-surface-variant flex gap-sm relative z-10">
+<button class="flex-1 bg-primary text-on-primary font-label-lg text-label-lg py-2 rounded-lg hover:bg-surface-tint transition-colors active:scale-95 duration-200">
+                        Details ansehen
+                    </button>
+<button aria-label="Route berechnen" class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">directions_car</span>
+</button>
+</div>
+</section>
+<!-- Quick Stats Column -->
+<section class="md:col-span-4 flex flex-col gap-card-gap">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-low rounded-xl p-md flex items-center justify-between border border-transparent hover:border-outline-variant transition-colors group">
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Kunden</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">42</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">groups</span>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-low rounded-xl p-md flex items-center justify-between border border-transparent hover:border-outline-variant transition-colors group">
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Pferde</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">58</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">pets</span>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-low rounded-xl p-md flex items-center justify-between border border-transparent hover:border-outline-variant transition-colors group">
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Termine (Monat)</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">24</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">event_available</span>
+</div>
+</div>
+</section>
+</div> <!-- End Grid -->
+<!-- Recent Activity Section -->
+<section>
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface">Letzte Aktivität</h2>
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center">
+                    Alle ansehen <span class="material-symbols-outlined text-[14px] ml-1">chevron_right</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm divide-y divide-surface-variant overflow-hidden">
+<!-- List Item 1 -->
+<div class="p-md hover:bg-surface-container-low transition-colors flex items-center justify-between cursor-pointer active:bg-surface-container-high">
+<div class="flex items-center gap-md">
+<div aria-hidden="true" class="w-2 h-10 rounded-full bg-primary"></div> <!-- Status/Type indicator: Regulär -->
+<div>
+<p class="font-label-lg text-label-lg text-on-surface mb-xs">Maximus</p>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">history</span> Gestern, 14:00
+                            </p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface">Hufbeschlag</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-[12px]">Rundum, regulär</p>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="p-md hover:bg-surface-container-low transition-colors flex items-center justify-between cursor-pointer active:bg-surface-container-high">
+<div class="flex items-center gap-md">
+<div aria-hidden="true" class="w-2 h-10 rounded-full bg-secondary-container"></div> <!-- Status/Type indicator: Akut -->
+<div>
+<p class="font-label-lg text-label-lg text-on-surface mb-xs">Bella</p>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">history</span> 12. Okt
+                            </p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface">Notfall</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-[12px]">Hufgeschwür</p>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="p-md hover:bg-surface-container-low transition-colors flex items-center justify-between cursor-pointer active:bg-surface-container-high">
+<div class="flex items-center gap-md">
+<div aria-hidden="true" class="w-2 h-10 rounded-full bg-primary"></div>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface mb-xs">Sternchen</p>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">history</span> 10. Okt
+                            </p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface">Ausschneiden</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-[12px]">Barhufpflege</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB for quick actions, suppressed here as requested by context rules but provided for reference if it was meant to be a primary action. Actually, for a Dashboard, a 'New Entry' FAB is often expected, but JSON doesn't specify one. I'll omit it to stay strict to the prompt unless needed. -->
+<!-- BottomNavBar (from JSON) -->
+<!-- Applying the 'Mobile Response Pivot' rule: hidden on md+ screens -->
+<nav class="md:hidden bg-surface dark:bg-surface-dim shadow-[0_-2px_8px_rgba(21,70,40,0.08)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2">
+<!-- Tab 1: Home (ACTIVE) -->
+<!-- Applying style_active_navigation to the 'Home' tab -->
+<button class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-container text-on-primary-container dark:text-on-primary-container rounded-full px-4 py-1 active:scale-95 duration-200 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</button>
+<!-- Tab 2: Kunden -->
+<!-- Applying style_inactive_navigation -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full px-4 py-1 active:scale-95 duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md mt-1">Kunden</span>
+</button>
+<!-- Tab 3: Termine -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full px-4 py-1 active:scale-95 duration-200">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md mt-1">Termine</span>
+</button>
+<!-- Tab 4: Einstellungen -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full px-4 py-1 active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md mt-1">Einstellungen</span>
+</button>
+</nav>
+<!-- Desktop Side Navigation (Simulated for md+ based on Responsive Pivot rule) -->
+<!-- Hiding BottomNavBar on desktop means we should provide an alternative. A minimal side nav. -->
+<aside class="hidden md:flex flex-col fixed left-0 top-0 h-full w-20 bg-surface border-r border-outline-variant items-center py-8 gap-lg z-50">
+<!-- Brand small -->
+<div class="text-primary mb-xl">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">pets</span>
+</div>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl w-14 h-14 active:scale-95 duration-200 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md text-[10px] mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-xl w-14 h-14 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md text-[10px] mt-1">Kunden</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-xl w-14 h-14 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md text-[10px] mt-1">Termine</span>
+</button>
+<div class="mt-auto"></div>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-xl w-14 h-14 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md text-[10px] mt-1">Settings</span>
+</button>
+</aside>
+<script>
+        // Simple JS for a slight scroll effect on header
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-sm', 'bg-surface-container-lowest');
+                header.classList.remove('bg-surface');
+            } else {
+                header.classList.remove('shadow-sm', 'bg-surface-container-lowest');
+                header.classList.add('bg-surface');
+            }
+        });
+    </script>
+</body></html>

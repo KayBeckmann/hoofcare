@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="de"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Terminkalender - Hufpflege</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1c19",
+                        "secondary-fixed-dim": "#ffb959",
+                        "on-tertiary-fixed": "#001e2d",
+                        "on-secondary-fixed": "#2a1800",
+                        "on-primary-fixed": "#00210e",
+                        "tertiary-container": "#275a75",
+                        "on-primary-container": "#a1d5ad",
+                        "surface-tint": "#386847",
+                        "primary-fixed-dim": "#9fd3aa",
+                        "secondary-fixed": "#ffddb6",
+                        "tertiary-fixed-dim": "#9dcdec",
+                        "inverse-primary": "#9fd3aa",
+                        "tertiary": "#04425c",
+                        "surface-container-highest": "#e5e2dd",
+                        "background": "#fcf9f4",
+                        "primary-container": "#2e5e3e",
+                        "primary-fixed": "#baefc5",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#31302d",
+                        "surface-bright": "#fcf9f4",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#643f00",
+                        "surface-dim": "#dcdad5",
+                        "secondary-container": "#ffb959",
+                        "on-tertiary-container": "#a0d0ef",
+                        "on-background": "#1c1c19",
+                        "surface-container-high": "#ebe8e3",
+                        "surface": "#fcf9f4",
+                        "on-tertiary-fixed-variant": "#154c66",
+                        "tertiary-fixed": "#c5e7ff",
+                        "surface-variant": "#e5e2dd",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f6f3ee",
+                        "on-primary-fixed-variant": "#1f5031",
+                        "outline-variant": "#c1c9bf",
+                        "inverse-on-surface": "#f3f0eb",
+                        "surface-container": "#f0ede9",
+                        "secondary": "#845400",
+                        "outline": "#717971",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#744900",
+                        "primary": "#154628",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414942"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-padding": "16px",
+                        "lg": "24px",
+                        "card-gap": "12px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Nunito Sans"],
+                        "label-md": ["Nunito Sans"],
+                        "label-lg": ["Nunito Sans"],
+                        "body-md": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "title-lg": ["Nunito Sans"],
+                        "headline-lg-mobile": ["Nunito Sans"],
+                        "display-lg": ["Nunito Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "display-lg": ["57px", { "lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Nunito Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-[90px] pt-16 selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 bg-surface dark:bg-surface-dim flex items-center justify-between px-container-padding h-16 w-full flat no shadows">
+<button class="text-on-surface dark:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full p-2 active:opacity-70 transition-opacity">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">Hufpflege</h1>
+<button class="text-on-surface dark:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full p-2 active:opacity-70 transition-opacity">
+<span class="material-symbols-outlined">check</span>
+</button>
+</header>
+<main class="px-container-padding max-w-2xl mx-auto space-y-lg mt-md">
+<!-- Calendar Section (Compact Month View) -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(21,70,40,0.08)] p-md border border-outline-variant/30">
+<div class="flex justify-between items-center mb-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface">Oktober 2023</h2>
+<div class="flex gap-sm">
+<button class="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-xs text-center mb-2">
+<div class="font-label-md text-label-md text-on-surface-variant">Mo</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Di</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Mi</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Do</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Fr</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Sa</div>
+<div class="font-label-md text-label-md text-on-surface-variant">So</div>
+</div>
+<div class="grid grid-cols-7 gap-xs text-center">
+<!-- Row 1 -->
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">16</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full bg-primary-container text-on-primary-container font-body-md text-body-md relative">
+                    17
+                    <span class="absolute bottom-1 w-1 h-1 rounded-full bg-primary-fixed"></span>
+</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">
+                    18
+                    <span class="absolute bottom-1 w-1 h-1 rounded-full bg-primary"></span>
+</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">19</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">
+                    20
+                    <span class="absolute bottom-1 w-1 h-1 rounded-full bg-primary"></span>
+</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface-variant relative">21</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface-variant relative">22</button>
+<!-- Row 2 -->
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">23</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">
+                    24
+                    <span class="absolute bottom-1 w-1 h-1 rounded-full bg-primary"></span>
+</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">25</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">26</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface relative">27</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface-variant relative">28</button>
+<button class="h-10 w-full flex flex-col items-center justify-center rounded-full hover:bg-surface-container font-body-md text-body-md text-on-surface-variant relative">29</button>
+</div>
+</section>
+<!-- Appointments List -->
+<section class="space-y-card-gap">
+<h3 class="font-title-lg text-title-lg text-on-background mb-md">Termine am 17. Oktober</h3>
+<!-- Appointment Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(21,70,40,0.08)] border border-outline-variant/30 flex gap-md items-start relative overflow-hidden group">
+<div class="flex-shrink-0 flex flex-col items-center min-w-[60px]">
+<span class="font-label-lg text-label-lg text-on-surface">09:00</span>
+<span class="font-label-md text-label-md text-on-surface-variant">-</span>
+<span class="font-label-md text-label-md text-on-surface-variant">10:00</span>
+</div>
+<div class="h-full w-[2px] bg-primary/20 absolute left-[84px] top-0 bottom-0 rounded-full group-hover:bg-primary transition-colors"></div>
+<div class="flex-1 pl-sm">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">Familie Müller</h4>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#E8F5E9] text-[#1B5E20] font-label-md text-label-md">Regulär</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Pferd: <span class="font-semibold text-on-surface">Amigo</span></p>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-md text-body-md">Waldstraße 12, 12345 Musterstadt</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</button>
+</div>
+<!-- Appointment Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(21,70,40,0.08)] border border-outline-variant/30 flex gap-md items-start relative overflow-hidden group">
+<div class="flex-shrink-0 flex flex-col items-center min-w-[60px]">
+<span class="font-label-lg text-label-lg text-on-surface">11:30</span>
+<span class="font-label-md text-label-md text-on-surface-variant">-</span>
+<span class="font-label-md text-label-md text-on-surface-variant">12:15</span>
+</div>
+<div class="h-full w-[2px] bg-secondary/20 absolute left-[84px] top-0 bottom-0 rounded-full group-hover:bg-secondary transition-colors"></div>
+<div class="flex-1 pl-sm">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">Reiterhof Sonnenschein</h4>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#FFF3E0] text-[#E65100] font-label-md text-label-md">Akut</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Pferd: <span class="font-semibold text-on-surface">Bella</span></p>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-md text-body-md">Feldweg 5, 54321 Beispieldorf</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</button>
+</div>
+<!-- Appointment Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(21,70,40,0.08)] border border-outline-variant/30 flex gap-md items-start relative overflow-hidden group">
+<div class="flex-shrink-0 flex flex-col items-center min-w-[60px]">
+<span class="font-label-lg text-label-lg text-on-surface">14:00</span>
+<span class="font-label-md text-label-md text-on-surface-variant">-</span>
+<span class="font-label-md text-label-md text-on-surface-variant">15:30</span>
+</div>
+<div class="h-full w-[2px] bg-tertiary/20 absolute left-[84px] top-0 bottom-0 rounded-full group-hover:bg-tertiary transition-colors"></div>
+<div class="flex-1 pl-sm">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">Gestüt Lindenhof</h4>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#E3F2FD] text-[#1565C0] font-label-md text-label-md">Geplant</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Pferde: <span class="font-semibold text-on-surface">Max, Moritz</span></p>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-md text-body-md">Lindenallee 1, 98765 Neustadt</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</button>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button aria-label="Termin hinzufügen" class="fixed bottom-[100px] right-container-padding bg-secondary text-on-secondary rounded-2xl w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all z-40">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface dark:bg-surface-dim shadow-[0_-2px_8px_rgba(21,70,40,0.08)] flex justify-around items-center px-4 pb-4 pt-2 md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform p-2 rounded-lg">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform p-2 rounded-lg">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md mt-1">Kunden</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-container text-on-primary-container dark:text-on-primary-container rounded-full px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-label-md text-label-md mt-1">Termine</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform p-2 rounded-lg">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md mt-1">Einstellungen</span>
+</button>
+</nav>
+</body></html>

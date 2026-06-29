@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="de"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kundenliste</title>
+<!-- Google Fonts: Nunito Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1c19",
+                        "secondary-fixed-dim": "#ffb959",
+                        "on-tertiary-fixed": "#001e2d",
+                        "on-secondary-fixed": "#2a1800",
+                        "on-primary-fixed": "#00210e",
+                        "tertiary-container": "#275a75",
+                        "on-primary-container": "#a1d5ad",
+                        "surface-tint": "#386847",
+                        "primary-fixed-dim": "#9fd3aa",
+                        "secondary-fixed": "#ffddb6",
+                        "tertiary-fixed-dim": "#9dcdec",
+                        "inverse-primary": "#9fd3aa",
+                        "tertiary": "#04425c",
+                        "surface-container-highest": "#e5e2dd",
+                        "background": "#fcf9f4",
+                        "primary-container": "#2e5e3e",
+                        "primary-fixed": "#baefc5",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#31302d",
+                        "surface-bright": "#fcf9f4",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#643f00",
+                        "surface-dim": "#dcdad5",
+                        "secondary-container": "#ffb959",
+                        "on-tertiary-container": "#a0d0ef",
+                        "on-background": "#1c1c19",
+                        "surface-container-high": "#ebe8e3",
+                        "surface": "#fcf9f4",
+                        "on-tertiary-fixed-variant": "#154c66",
+                        "tertiary-fixed": "#c5e7ff",
+                        "surface-variant": "#e5e2dd",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f6f3ee",
+                        "on-primary-fixed-variant": "#1f5031",
+                        "outline-variant": "#c1c9bf",
+                        "inverse-on-surface": "#f3f0eb",
+                        "surface-container": "#f0ede9",
+                        "secondary": "#845400",
+                        "outline": "#717971",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#744900",
+                        "primary": "#154628",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414942"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-padding": "16px",
+                        "lg": "24px",
+                        "card-gap": "12px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Nunito Sans"],
+                        "label-md": ["Nunito Sans"],
+                        "label-lg": ["Nunito Sans"],
+                        "body-md": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "title-lg": ["Nunito Sans"],
+                        "headline-lg-mobile": ["Nunito Sans"],
+                        "display-lg": ["Nunito Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-lg text-body-lg min-h-screen flex flex-col pb-[90px]">
+<!-- Top Area: Search & Filters -->
+<header class="sticky top-0 z-40 bg-surface/90 backdrop-blur-md px-container-padding pt-md pb-sm shadow-sm">
+<div class="flex items-center bg-surface-container-high rounded-full px-md py-sm mb-sm transition-colors hover:bg-surface-container-highest focus-within:bg-surface-container-highest focus-within:ring-2 focus-within:ring-primary/20">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm" data-icon="search" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-body-md text-body-md placeholder:text-on-surface-variant/70 outline-none" placeholder="Kunde oder Pferd suchen..." type="text">
+</div>
+<!-- Filter Chips -->
+<div class="flex overflow-x-auto gap-sm no-scrollbar py-xs">
+<button class="shrink-0 flex items-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-[6px] font-label-lg text-label-lg transition-colors active:opacity-70">
+<span class="material-symbols-outlined mr-xs text-[18px]" data-icon="check" style="font-variation-settings: 'FILL' 0;">check</span>
+                Alle Kunden
+            </button>
+<button class="shrink-0 flex items-center bg-surface-container text-on-surface rounded-full px-4 py-[6px] font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+                Akut
+            </button>
+<button class="shrink-0 flex items-center bg-surface-container text-on-surface rounded-full px-4 py-[6px] font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+                Geplant
+            </button>
+<button class="shrink-0 flex items-center bg-surface-container text-on-surface rounded-full px-4 py-[6px] font-label-lg text-label-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+                Kein Termin
+            </button></div>
+</header>
+<!-- Main Content: Client List -->
+<main class="flex-1 px-container-padding py-md space-y-card-gap">
+<!-- Section A -->
+<div>
+<h2 class="font-label-lg text-label-lg text-outline mb-sm ml-sm uppercase tracking-wider">A</h2>
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center shadow-[0_2px_8px_rgba(21,70,40,0.04)] border border-outline-variant/30 active:scale-[0.98] transition-transform duration-200">
+<img alt="Horse Avatar" class="w-12 h-12 rounded-full object-cover mr-md border border-surface-variant shadow-sm" data-alt="A clean, modern photographic headshot of a majestic bay horse against a neutral, soft focus background. Natural lighting highlights the sleek coat and attentive expression. High-end stable aesthetic, suitable for a premium equine management application, warm tones, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCluFB85XIFm8OVjDzR5dux8Jmpjyua5cnQVpZeap2m7-Ir2bPeDwNFP_6Zq5PUqfKijBHSQav-cQkWQrmulih02o_OphciV8oyb0v8uzYYZwnL7nbUXHJX2l6bzqEJV0_BUu0lyZqfy-KIY7wXk5FbvMsmmn6nCYKgA66_Whkh3GFVuSepknr0v7sDwoHoNL6BZgAWl16HzCdszvvdNzqDaRsWEF1MKoRQTqu_3baKMt0o8SCIXREBSmmYFQtjhD2UsqsRwAe6LUc">
+<div class="flex-1 min-w-0">
+<h3 class="font-title-lg text-title-lg text-on-surface truncate">Aigner, Familie</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">3 Pferde</p>
+</div>
+<div class="text-right ml-sm flex flex-col justify-center items-end">
+<span class="font-label-md text-label-md text-outline mb-xs">Letzter Termin</span>
+<span class="font-body-md text-body-md text-on-surface">12. Okt</span>
+</div>
+</div>
+</div>
+<!-- Section B -->
+<div class="mt-lg">
+<h2 class="font-label-lg text-label-lg text-outline mb-sm ml-sm uppercase tracking-wider">B</h2>
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center shadow-[0_2px_8px_rgba(21,70,40,0.04)] border border-outline-variant/30 active:scale-[0.98] transition-transform duration-200 mb-card-gap">
+<img alt="Horse Avatar" class="w-12 h-12 rounded-full object-cover mr-md border border-surface-variant shadow-sm" data-alt="A crisp, well-lit photo of a grey horse looking directly at the camera. The background is a beautifully blurred green pasture. Cinematic, soft lighting. Professional equestrian photography style, earthy and natural color palette, perfect for a digital profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl9O4f82Rk3MXVZrVMXz2nJ7cU1sZsfTtI-OH0E95ifY4teuuyjkIsxgNF6Qq9_zk1YEKg-j-8WJQ2WE6GbET_o6AMa5GduZxcRJhBHp2jzxG7u6m1lp5R3Ir7lf9YczFncEWSb8Pxcd-X0BZzKTqN4-yffFE4mF7wb07nrEY9Z2-qkd9kIxX5jUKeGkQurVoEKkNI7tJKMZfjnI-9EaxMZ3q02lWbVmw0_DOr3sFHEYk6CSpon81REtYp2KqlkmLqn0fQ84TtM2A">
+<div class="flex-1 min-w-0">
+<h3 class="font-title-lg text-title-lg text-on-surface truncate">Bauer, Thomas</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">1 Pferd</p>
+</div>
+<div class="text-right ml-sm flex flex-col justify-center items-end">
+<span class="font-label-md text-label-md text-outline mb-xs">Letzter Termin</span>
+<span class="font-body-md text-body-md text-on-surface">05. Nov</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center shadow-[0_2px_8px_rgba(21,70,40,0.04)] border border-outline-variant/30 active:scale-[0.98] transition-transform duration-200">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mr-md text-surface-tint border border-surface-variant">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 0;">person</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-title-lg text-title-lg text-on-surface truncate">Bergmann, Sarah</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">2 Pferde</p>
+</div>
+<div class="text-right ml-sm flex flex-col justify-center items-end">
+<span class="font-label-md text-label-md text-outline mb-xs">Letzter Termin</span>
+<span class="font-body-md text-body-md text-on-surface">28. Sep</span>
+</div>
+</div>
+</div>
+<!-- Section W -->
+<div class="mt-lg pb-xl">
+<h2 class="font-label-lg text-label-lg text-outline mb-sm ml-sm uppercase tracking-wider">W</h2>
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center shadow-[0_2px_8px_rgba(21,70,40,0.04)] border border-outline-variant/30 active:scale-[0.98] transition-transform duration-200">
+<img alt="Horse Avatar" class="w-12 h-12 rounded-full object-cover mr-md border border-surface-variant shadow-sm" data-alt="A close-up portrait of a dark brown horse with a gentle eye. Captured in soft morning light with a minimalist, clean stable wall in the blurred background. Warm, inviting atmosphere, sharp details on the halter. Premium digital asset for an equine care app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmaPN4H2gvcks_1IuEtfk8RwHC0xLqo76Yrhq-FHqtv9VBNBNN9HWPP22K7U5ql6VK9rINfBW7OecSq22glq0K0nOAY7PF_EnCekHQ1ENwbY1JsF3ZEHY2k2vnQDSOwOkD-CzEbY0_j_91YwiXIetlzsWfKoxQ4zJpDLhJtkCYbFBO1ToPA6aVSMpkeMNyezBciSG_nzHN_UJhMognzSIW98QB2KVXwxhIFP5d2QOBNq1inwSTIONBOXu1n_1fIJs_tzjAl-6z868">
+<div class="flex-1 min-w-0">
+<h3 class="font-title-lg text-title-lg text-on-surface truncate">Wagner, Reiterhof</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">14 Pferde</p>
+</div>
+<div class="text-right ml-sm flex flex-col justify-center items-end">
+<span class="font-label-md text-label-md text-outline mb-xs">Letzter Termin</span>
+<span class="font-body-md text-body-md text-primary font-semibold">Heute</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-[88px] right-container-padding w-14 h-14 bg-primary text-on-primary rounded-[16px] shadow-[0_4px_12px_rgba(21,70,40,0.25)] flex items-center justify-center z-50 hover:bg-on-primary-fixed-variant active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-[28px]" data-icon="add" style="font-variation-settings: 'FILL' 0;">add</span>
+</button>
+<!-- Bottom Navigation Bar (from Shared Components JSON) -->
+<nav class="bg-surface dark:bg-surface-dim fixed bottom-0 w-full z-50 bg-surface dark:bg-surface-dim shadow-[0_-2px_8px_rgba(21,70,40,0.08)] shadow-sm fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 md:hidden">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="home" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<!-- Kunden (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-container text-on-primary-container dark:text-on-primary-container rounded-full px-4 py-1 active:scale-95 duration-200 transition-transform" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-md text-label-md">Kunden</span>
+</a>
+<!-- Termine (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="calendar_today" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+<span class="font-label-md text-label-md">Termine</span>
+</a>
+<!-- Einstellungen (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 transition-transform px-4 py-1 rounded-full" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="settings" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-md text-label-md">Einstellungen</span>
+</a>
+</nav>
+
+
+</body></html>
