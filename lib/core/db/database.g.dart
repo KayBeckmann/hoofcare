@@ -72,6 +72,18 @@ class $OwnersTable extends Owners with TableInfo<$OwnersTable, Owner> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _kategorieMeta = const VerificationMeta(
+    'kategorie',
+  );
+  @override
+  late final GeneratedColumn<String> kategorie = GeneratedColumn<String>(
+    'kategorie',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('B'),
+  );
   static const VerificationMeta _isArchivedMeta = const VerificationMeta(
     'isArchived',
   );
@@ -107,6 +119,7 @@ class $OwnersTable extends Owners with TableInfo<$OwnersTable, Owner> {
     email,
     address,
     notes,
+    kategorie,
     isArchived,
     createdAt,
   ];
@@ -157,6 +170,12 @@ class $OwnersTable extends Owners with TableInfo<$OwnersTable, Owner> {
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
       );
     }
+    if (data.containsKey('kategorie')) {
+      context.handle(
+        _kategorieMeta,
+        kategorie.isAcceptableOrUnknown(data['kategorie']!, _kategorieMeta),
+      );
+    }
     if (data.containsKey('is_archived')) {
       context.handle(
         _isArchivedMeta,
@@ -202,6 +221,10 @@ class $OwnersTable extends Owners with TableInfo<$OwnersTable, Owner> {
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
       ),
+      kategorie: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kategorie'],
+      )!,
       isArchived: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_archived'],
@@ -226,6 +249,7 @@ class Owner extends DataClass implements Insertable<Owner> {
   final String? email;
   final String? address;
   final String? notes;
+  final String kategorie;
   final bool isArchived;
   final DateTime createdAt;
   const Owner({
@@ -235,6 +259,7 @@ class Owner extends DataClass implements Insertable<Owner> {
     this.email,
     this.address,
     this.notes,
+    required this.kategorie,
     required this.isArchived,
     required this.createdAt,
   });
@@ -255,6 +280,7 @@ class Owner extends DataClass implements Insertable<Owner> {
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
+    map['kategorie'] = Variable<String>(kategorie);
     map['is_archived'] = Variable<bool>(isArchived);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -276,6 +302,7 @@ class Owner extends DataClass implements Insertable<Owner> {
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
+      kategorie: Value(kategorie),
       isArchived: Value(isArchived),
       createdAt: Value(createdAt),
     );
@@ -293,6 +320,7 @@ class Owner extends DataClass implements Insertable<Owner> {
       email: serializer.fromJson<String?>(json['email']),
       address: serializer.fromJson<String?>(json['address']),
       notes: serializer.fromJson<String?>(json['notes']),
+      kategorie: serializer.fromJson<String>(json['kategorie']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -307,6 +335,7 @@ class Owner extends DataClass implements Insertable<Owner> {
       'email': serializer.toJson<String?>(email),
       'address': serializer.toJson<String?>(address),
       'notes': serializer.toJson<String?>(notes),
+      'kategorie': serializer.toJson<String>(kategorie),
       'isArchived': serializer.toJson<bool>(isArchived),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -319,6 +348,7 @@ class Owner extends DataClass implements Insertable<Owner> {
     Value<String?> email = const Value.absent(),
     Value<String?> address = const Value.absent(),
     Value<String?> notes = const Value.absent(),
+    String? kategorie,
     bool? isArchived,
     DateTime? createdAt,
   }) => Owner(
@@ -328,6 +358,7 @@ class Owner extends DataClass implements Insertable<Owner> {
     email: email.present ? email.value : this.email,
     address: address.present ? address.value : this.address,
     notes: notes.present ? notes.value : this.notes,
+    kategorie: kategorie ?? this.kategorie,
     isArchived: isArchived ?? this.isArchived,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -339,6 +370,7 @@ class Owner extends DataClass implements Insertable<Owner> {
       email: data.email.present ? data.email.value : this.email,
       address: data.address.present ? data.address.value : this.address,
       notes: data.notes.present ? data.notes.value : this.notes,
+      kategorie: data.kategorie.present ? data.kategorie.value : this.kategorie,
       isArchived: data.isArchived.present
           ? data.isArchived.value
           : this.isArchived,
@@ -355,6 +387,7 @@ class Owner extends DataClass implements Insertable<Owner> {
           ..write('email: $email, ')
           ..write('address: $address, ')
           ..write('notes: $notes, ')
+          ..write('kategorie: $kategorie, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -369,6 +402,7 @@ class Owner extends DataClass implements Insertable<Owner> {
     email,
     address,
     notes,
+    kategorie,
     isArchived,
     createdAt,
   );
@@ -382,6 +416,7 @@ class Owner extends DataClass implements Insertable<Owner> {
           other.email == this.email &&
           other.address == this.address &&
           other.notes == this.notes &&
+          other.kategorie == this.kategorie &&
           other.isArchived == this.isArchived &&
           other.createdAt == this.createdAt);
 }
@@ -393,6 +428,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
   final Value<String?> email;
   final Value<String?> address;
   final Value<String?> notes;
+  final Value<String> kategorie;
   final Value<bool> isArchived;
   final Value<DateTime> createdAt;
   const OwnersCompanion({
@@ -402,6 +438,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
     this.email = const Value.absent(),
     this.address = const Value.absent(),
     this.notes = const Value.absent(),
+    this.kategorie = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -412,6 +449,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
     this.email = const Value.absent(),
     this.address = const Value.absent(),
     this.notes = const Value.absent(),
+    this.kategorie = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : name = Value(name);
@@ -422,6 +460,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
     Expression<String>? email,
     Expression<String>? address,
     Expression<String>? notes,
+    Expression<String>? kategorie,
     Expression<bool>? isArchived,
     Expression<DateTime>? createdAt,
   }) {
@@ -432,6 +471,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
       if (email != null) 'email': email,
       if (address != null) 'address': address,
       if (notes != null) 'notes': notes,
+      if (kategorie != null) 'kategorie': kategorie,
       if (isArchived != null) 'is_archived': isArchived,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -444,6 +484,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
     Value<String?>? email,
     Value<String?>? address,
     Value<String?>? notes,
+    Value<String>? kategorie,
     Value<bool>? isArchived,
     Value<DateTime>? createdAt,
   }) {
@@ -454,6 +495,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
       email: email ?? this.email,
       address: address ?? this.address,
       notes: notes ?? this.notes,
+      kategorie: kategorie ?? this.kategorie,
       isArchived: isArchived ?? this.isArchived,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -480,6 +522,9 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (kategorie.present) {
+      map['kategorie'] = Variable<String>(kategorie.value);
+    }
     if (isArchived.present) {
       map['is_archived'] = Variable<bool>(isArchived.value);
     }
@@ -498,6 +543,7 @@ class OwnersCompanion extends UpdateCompanion<Owner> {
           ..write('email: $email, ')
           ..write('address: $address, ')
           ..write('notes: $notes, ')
+          ..write('kategorie: $kategorie, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -550,6 +596,18 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _animalTypeMeta = const VerificationMeta(
+    'animalType',
+  );
+  @override
+  late final GeneratedColumn<String> animalType = GeneratedColumn<String>(
+    'animal_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Pferd'),
+  );
   static const VerificationMeta _breedMeta = const VerificationMeta('breed');
   @override
   late final GeneratedColumn<String> breed = GeneratedColumn<String>(
@@ -590,6 +648,18 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _kategorieMeta = const VerificationMeta(
+    'kategorie',
+  );
+  @override
+  late final GeneratedColumn<String> kategorie = GeneratedColumn<String>(
+    'kategorie',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('B'),
+  );
   static const VerificationMeta _isArchivedMeta = const VerificationMeta(
     'isArchived',
   );
@@ -622,10 +692,12 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
     id,
     ownerId,
     name,
+    animalType,
     breed,
     birthYear,
     notes,
     photoPath,
+    kategorie,
     isArchived,
     createdAt,
   ];
@@ -660,6 +732,12 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('animal_type')) {
+      context.handle(
+        _animalTypeMeta,
+        animalType.isAcceptableOrUnknown(data['animal_type']!, _animalTypeMeta),
+      );
+    }
     if (data.containsKey('breed')) {
       context.handle(
         _breedMeta,
@@ -682,6 +760,12 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
       context.handle(
         _photoPathMeta,
         photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('kategorie')) {
+      context.handle(
+        _kategorieMeta,
+        kategorie.isAcceptableOrUnknown(data['kategorie']!, _kategorieMeta),
       );
     }
     if (data.containsKey('is_archived')) {
@@ -717,6 +801,10 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      animalType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_type'],
+      )!,
       breed: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}breed'],
@@ -733,6 +821,10 @@ class $HorsesTable extends Horses with TableInfo<$HorsesTable, Horse> {
         DriftSqlType.string,
         data['${effectivePrefix}photo_path'],
       ),
+      kategorie: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kategorie'],
+      )!,
       isArchived: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_archived'],
@@ -754,20 +846,24 @@ class Horse extends DataClass implements Insertable<Horse> {
   final int id;
   final int ownerId;
   final String name;
+  final String animalType;
   final String? breed;
   final int? birthYear;
   final String? notes;
   final String? photoPath;
+  final String kategorie;
   final bool isArchived;
   final DateTime createdAt;
   const Horse({
     required this.id,
     required this.ownerId,
     required this.name,
+    required this.animalType,
     this.breed,
     this.birthYear,
     this.notes,
     this.photoPath,
+    required this.kategorie,
     required this.isArchived,
     required this.createdAt,
   });
@@ -777,6 +873,7 @@ class Horse extends DataClass implements Insertable<Horse> {
     map['id'] = Variable<int>(id);
     map['owner_id'] = Variable<int>(ownerId);
     map['name'] = Variable<String>(name);
+    map['animal_type'] = Variable<String>(animalType);
     if (!nullToAbsent || breed != null) {
       map['breed'] = Variable<String>(breed);
     }
@@ -789,6 +886,7 @@ class Horse extends DataClass implements Insertable<Horse> {
     if (!nullToAbsent || photoPath != null) {
       map['photo_path'] = Variable<String>(photoPath);
     }
+    map['kategorie'] = Variable<String>(kategorie);
     map['is_archived'] = Variable<bool>(isArchived);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -799,6 +897,7 @@ class Horse extends DataClass implements Insertable<Horse> {
       id: Value(id),
       ownerId: Value(ownerId),
       name: Value(name),
+      animalType: Value(animalType),
       breed: breed == null && nullToAbsent
           ? const Value.absent()
           : Value(breed),
@@ -811,6 +910,7 @@ class Horse extends DataClass implements Insertable<Horse> {
       photoPath: photoPath == null && nullToAbsent
           ? const Value.absent()
           : Value(photoPath),
+      kategorie: Value(kategorie),
       isArchived: Value(isArchived),
       createdAt: Value(createdAt),
     );
@@ -825,10 +925,12 @@ class Horse extends DataClass implements Insertable<Horse> {
       id: serializer.fromJson<int>(json['id']),
       ownerId: serializer.fromJson<int>(json['ownerId']),
       name: serializer.fromJson<String>(json['name']),
+      animalType: serializer.fromJson<String>(json['animalType']),
       breed: serializer.fromJson<String?>(json['breed']),
       birthYear: serializer.fromJson<int?>(json['birthYear']),
       notes: serializer.fromJson<String?>(json['notes']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
+      kategorie: serializer.fromJson<String>(json['kategorie']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -840,10 +942,12 @@ class Horse extends DataClass implements Insertable<Horse> {
       'id': serializer.toJson<int>(id),
       'ownerId': serializer.toJson<int>(ownerId),
       'name': serializer.toJson<String>(name),
+      'animalType': serializer.toJson<String>(animalType),
       'breed': serializer.toJson<String?>(breed),
       'birthYear': serializer.toJson<int?>(birthYear),
       'notes': serializer.toJson<String?>(notes),
       'photoPath': serializer.toJson<String?>(photoPath),
+      'kategorie': serializer.toJson<String>(kategorie),
       'isArchived': serializer.toJson<bool>(isArchived),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -853,20 +957,24 @@ class Horse extends DataClass implements Insertable<Horse> {
     int? id,
     int? ownerId,
     String? name,
+    String? animalType,
     Value<String?> breed = const Value.absent(),
     Value<int?> birthYear = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     Value<String?> photoPath = const Value.absent(),
+    String? kategorie,
     bool? isArchived,
     DateTime? createdAt,
   }) => Horse(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     name: name ?? this.name,
+    animalType: animalType ?? this.animalType,
     breed: breed.present ? breed.value : this.breed,
     birthYear: birthYear.present ? birthYear.value : this.birthYear,
     notes: notes.present ? notes.value : this.notes,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    kategorie: kategorie ?? this.kategorie,
     isArchived: isArchived ?? this.isArchived,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -875,10 +983,14 @@ class Horse extends DataClass implements Insertable<Horse> {
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       name: data.name.present ? data.name.value : this.name,
+      animalType: data.animalType.present
+          ? data.animalType.value
+          : this.animalType,
       breed: data.breed.present ? data.breed.value : this.breed,
       birthYear: data.birthYear.present ? data.birthYear.value : this.birthYear,
       notes: data.notes.present ? data.notes.value : this.notes,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      kategorie: data.kategorie.present ? data.kategorie.value : this.kategorie,
       isArchived: data.isArchived.present
           ? data.isArchived.value
           : this.isArchived,
@@ -892,10 +1004,12 @@ class Horse extends DataClass implements Insertable<Horse> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('animalType: $animalType, ')
           ..write('breed: $breed, ')
           ..write('birthYear: $birthYear, ')
           ..write('notes: $notes, ')
           ..write('photoPath: $photoPath, ')
+          ..write('kategorie: $kategorie, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -907,10 +1021,12 @@ class Horse extends DataClass implements Insertable<Horse> {
     id,
     ownerId,
     name,
+    animalType,
     breed,
     birthYear,
     notes,
     photoPath,
+    kategorie,
     isArchived,
     createdAt,
   );
@@ -921,10 +1037,12 @@ class Horse extends DataClass implements Insertable<Horse> {
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.name == this.name &&
+          other.animalType == this.animalType &&
           other.breed == this.breed &&
           other.birthYear == this.birthYear &&
           other.notes == this.notes &&
           other.photoPath == this.photoPath &&
+          other.kategorie == this.kategorie &&
           other.isArchived == this.isArchived &&
           other.createdAt == this.createdAt);
 }
@@ -933,20 +1051,24 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
   final Value<int> id;
   final Value<int> ownerId;
   final Value<String> name;
+  final Value<String> animalType;
   final Value<String?> breed;
   final Value<int?> birthYear;
   final Value<String?> notes;
   final Value<String?> photoPath;
+  final Value<String> kategorie;
   final Value<bool> isArchived;
   final Value<DateTime> createdAt;
   const HorsesCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.name = const Value.absent(),
+    this.animalType = const Value.absent(),
     this.breed = const Value.absent(),
     this.birthYear = const Value.absent(),
     this.notes = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.kategorie = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -954,10 +1076,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
     this.id = const Value.absent(),
     required int ownerId,
     required String name,
+    this.animalType = const Value.absent(),
     this.breed = const Value.absent(),
     this.birthYear = const Value.absent(),
     this.notes = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.kategorie = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : ownerId = Value(ownerId),
@@ -966,10 +1090,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
     Expression<int>? id,
     Expression<int>? ownerId,
     Expression<String>? name,
+    Expression<String>? animalType,
     Expression<String>? breed,
     Expression<int>? birthYear,
     Expression<String>? notes,
     Expression<String>? photoPath,
+    Expression<String>? kategorie,
     Expression<bool>? isArchived,
     Expression<DateTime>? createdAt,
   }) {
@@ -977,10 +1103,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (name != null) 'name': name,
+      if (animalType != null) 'animal_type': animalType,
       if (breed != null) 'breed': breed,
       if (birthYear != null) 'birth_year': birthYear,
       if (notes != null) 'notes': notes,
       if (photoPath != null) 'photo_path': photoPath,
+      if (kategorie != null) 'kategorie': kategorie,
       if (isArchived != null) 'is_archived': isArchived,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -990,10 +1118,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
     Value<int>? id,
     Value<int>? ownerId,
     Value<String>? name,
+    Value<String>? animalType,
     Value<String?>? breed,
     Value<int?>? birthYear,
     Value<String?>? notes,
     Value<String?>? photoPath,
+    Value<String>? kategorie,
     Value<bool>? isArchived,
     Value<DateTime>? createdAt,
   }) {
@@ -1001,10 +1131,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       name: name ?? this.name,
+      animalType: animalType ?? this.animalType,
       breed: breed ?? this.breed,
       birthYear: birthYear ?? this.birthYear,
       notes: notes ?? this.notes,
       photoPath: photoPath ?? this.photoPath,
+      kategorie: kategorie ?? this.kategorie,
       isArchived: isArchived ?? this.isArchived,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -1022,6 +1154,9 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (animalType.present) {
+      map['animal_type'] = Variable<String>(animalType.value);
+    }
     if (breed.present) {
       map['breed'] = Variable<String>(breed.value);
     }
@@ -1033,6 +1168,9 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
     }
     if (photoPath.present) {
       map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (kategorie.present) {
+      map['kategorie'] = Variable<String>(kategorie.value);
     }
     if (isArchived.present) {
       map['is_archived'] = Variable<bool>(isArchived.value);
@@ -1049,10 +1187,12 @@ class HorsesCompanion extends UpdateCompanion<Horse> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('animalType: $animalType, ')
           ..write('breed: $breed, ')
           ..write('birthYear: $birthYear, ')
           ..write('notes: $notes, ')
           ..write('photoPath: $photoPath, ')
+          ..write('kategorie: $kategorie, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -1890,18 +2030,18 @@ class $AppointmentsTable extends Appointments
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _horseIdMeta = const VerificationMeta(
-    'horseId',
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
   );
   @override
-  late final GeneratedColumn<int> horseId = GeneratedColumn<int>(
-    'horse_id',
+  late final GeneratedColumn<int> ownerId = GeneratedColumn<int>(
+    'owner_id',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES horses (id)',
+      'REFERENCES owners (id)',
     ),
   );
   static const VerificationMeta _scheduledAtMeta = const VerificationMeta(
@@ -1946,6 +2086,43 @@ class $AppointmentsTable extends Appointments
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _einnahmeAnfahrtMeta = const VerificationMeta(
+    'einnahmeAnfahrt',
+  );
+  @override
+  late final GeneratedColumn<double> einnahmeAnfahrt = GeneratedColumn<double>(
+    'einnahme_anfahrt',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _einnahmeProTierMeta = const VerificationMeta(
+    'einnahmeProTier',
+  );
+  @override
+  late final GeneratedColumn<double> einnahmeProTier = GeneratedColumn<double>(
+    'einnahme_pro_tier',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _einnahmeTrinkgeldMeta = const VerificationMeta(
+    'einnahmeTrinkgeld',
+  );
+  @override
+  late final GeneratedColumn<double> einnahmeTrinkgeld =
+      GeneratedColumn<double>(
+        'einnahme_trinkgeld',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.0),
+      );
   static const VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
   @override
   late final GeneratedColumn<bool> isDone = GeneratedColumn<bool>(
@@ -1974,11 +2151,14 @@ class $AppointmentsTable extends Appointments
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    horseId,
+    ownerId,
     scheduledAt,
     durationMinutes,
     type,
     notes,
+    einnahmeAnfahrt,
+    einnahmeProTier,
+    einnahmeTrinkgeld,
     isDone,
     createdAt,
   ];
@@ -1997,13 +2177,13 @@ class $AppointmentsTable extends Appointments
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('horse_id')) {
+    if (data.containsKey('owner_id')) {
       context.handle(
-        _horseIdMeta,
-        horseId.isAcceptableOrUnknown(data['horse_id']!, _horseIdMeta),
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_horseIdMeta);
+      context.missing(_ownerIdMeta);
     }
     if (data.containsKey('scheduled_at')) {
       context.handle(
@@ -2037,6 +2217,33 @@ class $AppointmentsTable extends Appointments
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
       );
     }
+    if (data.containsKey('einnahme_anfahrt')) {
+      context.handle(
+        _einnahmeAnfahrtMeta,
+        einnahmeAnfahrt.isAcceptableOrUnknown(
+          data['einnahme_anfahrt']!,
+          _einnahmeAnfahrtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('einnahme_pro_tier')) {
+      context.handle(
+        _einnahmeProTierMeta,
+        einnahmeProTier.isAcceptableOrUnknown(
+          data['einnahme_pro_tier']!,
+          _einnahmeProTierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('einnahme_trinkgeld')) {
+      context.handle(
+        _einnahmeTrinkgeldMeta,
+        einnahmeTrinkgeld.isAcceptableOrUnknown(
+          data['einnahme_trinkgeld']!,
+          _einnahmeTrinkgeldMeta,
+        ),
+      );
+    }
     if (data.containsKey('is_done')) {
       context.handle(
         _isDoneMeta,
@@ -2062,9 +2269,9 @@ class $AppointmentsTable extends Appointments
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
-      horseId: attachedDatabase.typeMapping.read(
+      ownerId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}horse_id'],
+        data['${effectivePrefix}owner_id'],
       )!,
       scheduledAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -2082,6 +2289,18 @@ class $AppointmentsTable extends Appointments
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
       ),
+      einnahmeAnfahrt: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}einnahme_anfahrt'],
+      )!,
+      einnahmeProTier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}einnahme_pro_tier'],
+      )!,
+      einnahmeTrinkgeld: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}einnahme_trinkgeld'],
+      )!,
       isDone: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_done'],
@@ -2101,20 +2320,26 @@ class $AppointmentsTable extends Appointments
 
 class Appointment extends DataClass implements Insertable<Appointment> {
   final int id;
-  final int horseId;
+  final int ownerId;
   final DateTime scheduledAt;
   final int durationMinutes;
   final String type;
   final String? notes;
+  final double einnahmeAnfahrt;
+  final double einnahmeProTier;
+  final double einnahmeTrinkgeld;
   final bool isDone;
   final DateTime createdAt;
   const Appointment({
     required this.id,
-    required this.horseId,
+    required this.ownerId,
     required this.scheduledAt,
     required this.durationMinutes,
     required this.type,
     this.notes,
+    required this.einnahmeAnfahrt,
+    required this.einnahmeProTier,
+    required this.einnahmeTrinkgeld,
     required this.isDone,
     required this.createdAt,
   });
@@ -2122,13 +2347,16 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['horse_id'] = Variable<int>(horseId);
+    map['owner_id'] = Variable<int>(ownerId);
     map['scheduled_at'] = Variable<DateTime>(scheduledAt);
     map['duration_minutes'] = Variable<int>(durationMinutes);
     map['type'] = Variable<String>(type);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
+    map['einnahme_anfahrt'] = Variable<double>(einnahmeAnfahrt);
+    map['einnahme_pro_tier'] = Variable<double>(einnahmeProTier);
+    map['einnahme_trinkgeld'] = Variable<double>(einnahmeTrinkgeld);
     map['is_done'] = Variable<bool>(isDone);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -2137,13 +2365,16 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   AppointmentsCompanion toCompanion(bool nullToAbsent) {
     return AppointmentsCompanion(
       id: Value(id),
-      horseId: Value(horseId),
+      ownerId: Value(ownerId),
       scheduledAt: Value(scheduledAt),
       durationMinutes: Value(durationMinutes),
       type: Value(type),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
+      einnahmeAnfahrt: Value(einnahmeAnfahrt),
+      einnahmeProTier: Value(einnahmeProTier),
+      einnahmeTrinkgeld: Value(einnahmeTrinkgeld),
       isDone: Value(isDone),
       createdAt: Value(createdAt),
     );
@@ -2156,11 +2387,14 @@ class Appointment extends DataClass implements Insertable<Appointment> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Appointment(
       id: serializer.fromJson<int>(json['id']),
-      horseId: serializer.fromJson<int>(json['horseId']),
+      ownerId: serializer.fromJson<int>(json['ownerId']),
       scheduledAt: serializer.fromJson<DateTime>(json['scheduledAt']),
       durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
       type: serializer.fromJson<String>(json['type']),
       notes: serializer.fromJson<String?>(json['notes']),
+      einnahmeAnfahrt: serializer.fromJson<double>(json['einnahmeAnfahrt']),
+      einnahmeProTier: serializer.fromJson<double>(json['einnahmeProTier']),
+      einnahmeTrinkgeld: serializer.fromJson<double>(json['einnahmeTrinkgeld']),
       isDone: serializer.fromJson<bool>(json['isDone']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -2170,11 +2404,14 @@ class Appointment extends DataClass implements Insertable<Appointment> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'horseId': serializer.toJson<int>(horseId),
+      'ownerId': serializer.toJson<int>(ownerId),
       'scheduledAt': serializer.toJson<DateTime>(scheduledAt),
       'durationMinutes': serializer.toJson<int>(durationMinutes),
       'type': serializer.toJson<String>(type),
       'notes': serializer.toJson<String?>(notes),
+      'einnahmeAnfahrt': serializer.toJson<double>(einnahmeAnfahrt),
+      'einnahmeProTier': serializer.toJson<double>(einnahmeProTier),
+      'einnahmeTrinkgeld': serializer.toJson<double>(einnahmeTrinkgeld),
       'isDone': serializer.toJson<bool>(isDone),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -2182,27 +2419,33 @@ class Appointment extends DataClass implements Insertable<Appointment> {
 
   Appointment copyWith({
     int? id,
-    int? horseId,
+    int? ownerId,
     DateTime? scheduledAt,
     int? durationMinutes,
     String? type,
     Value<String?> notes = const Value.absent(),
+    double? einnahmeAnfahrt,
+    double? einnahmeProTier,
+    double? einnahmeTrinkgeld,
     bool? isDone,
     DateTime? createdAt,
   }) => Appointment(
     id: id ?? this.id,
-    horseId: horseId ?? this.horseId,
+    ownerId: ownerId ?? this.ownerId,
     scheduledAt: scheduledAt ?? this.scheduledAt,
     durationMinutes: durationMinutes ?? this.durationMinutes,
     type: type ?? this.type,
     notes: notes.present ? notes.value : this.notes,
+    einnahmeAnfahrt: einnahmeAnfahrt ?? this.einnahmeAnfahrt,
+    einnahmeProTier: einnahmeProTier ?? this.einnahmeProTier,
+    einnahmeTrinkgeld: einnahmeTrinkgeld ?? this.einnahmeTrinkgeld,
     isDone: isDone ?? this.isDone,
     createdAt: createdAt ?? this.createdAt,
   );
   Appointment copyWithCompanion(AppointmentsCompanion data) {
     return Appointment(
       id: data.id.present ? data.id.value : this.id,
-      horseId: data.horseId.present ? data.horseId.value : this.horseId,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       scheduledAt: data.scheduledAt.present
           ? data.scheduledAt.value
           : this.scheduledAt,
@@ -2211,6 +2454,15 @@ class Appointment extends DataClass implements Insertable<Appointment> {
           : this.durationMinutes,
       type: data.type.present ? data.type.value : this.type,
       notes: data.notes.present ? data.notes.value : this.notes,
+      einnahmeAnfahrt: data.einnahmeAnfahrt.present
+          ? data.einnahmeAnfahrt.value
+          : this.einnahmeAnfahrt,
+      einnahmeProTier: data.einnahmeProTier.present
+          ? data.einnahmeProTier.value
+          : this.einnahmeProTier,
+      einnahmeTrinkgeld: data.einnahmeTrinkgeld.present
+          ? data.einnahmeTrinkgeld.value
+          : this.einnahmeTrinkgeld,
       isDone: data.isDone.present ? data.isDone.value : this.isDone,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
@@ -2220,11 +2472,14 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   String toString() {
     return (StringBuffer('Appointment(')
           ..write('id: $id, ')
-          ..write('horseId: $horseId, ')
+          ..write('ownerId: $ownerId, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('type: $type, ')
           ..write('notes: $notes, ')
+          ..write('einnahmeAnfahrt: $einnahmeAnfahrt, ')
+          ..write('einnahmeProTier: $einnahmeProTier, ')
+          ..write('einnahmeTrinkgeld: $einnahmeTrinkgeld, ')
           ..write('isDone: $isDone, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -2234,11 +2489,14 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   @override
   int get hashCode => Object.hash(
     id,
-    horseId,
+    ownerId,
     scheduledAt,
     durationMinutes,
     type,
     notes,
+    einnahmeAnfahrt,
+    einnahmeProTier,
+    einnahmeTrinkgeld,
     isDone,
     createdAt,
   );
@@ -2247,62 +2505,80 @@ class Appointment extends DataClass implements Insertable<Appointment> {
       identical(this, other) ||
       (other is Appointment &&
           other.id == this.id &&
-          other.horseId == this.horseId &&
+          other.ownerId == this.ownerId &&
           other.scheduledAt == this.scheduledAt &&
           other.durationMinutes == this.durationMinutes &&
           other.type == this.type &&
           other.notes == this.notes &&
+          other.einnahmeAnfahrt == this.einnahmeAnfahrt &&
+          other.einnahmeProTier == this.einnahmeProTier &&
+          other.einnahmeTrinkgeld == this.einnahmeTrinkgeld &&
           other.isDone == this.isDone &&
           other.createdAt == this.createdAt);
 }
 
 class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   final Value<int> id;
-  final Value<int> horseId;
+  final Value<int> ownerId;
   final Value<DateTime> scheduledAt;
   final Value<int> durationMinutes;
   final Value<String> type;
   final Value<String?> notes;
+  final Value<double> einnahmeAnfahrt;
+  final Value<double> einnahmeProTier;
+  final Value<double> einnahmeTrinkgeld;
   final Value<bool> isDone;
   final Value<DateTime> createdAt;
   const AppointmentsCompanion({
     this.id = const Value.absent(),
-    this.horseId = const Value.absent(),
+    this.ownerId = const Value.absent(),
     this.scheduledAt = const Value.absent(),
     this.durationMinutes = const Value.absent(),
     this.type = const Value.absent(),
     this.notes = const Value.absent(),
+    this.einnahmeAnfahrt = const Value.absent(),
+    this.einnahmeProTier = const Value.absent(),
+    this.einnahmeTrinkgeld = const Value.absent(),
     this.isDone = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   AppointmentsCompanion.insert({
     this.id = const Value.absent(),
-    required int horseId,
+    required int ownerId,
     required DateTime scheduledAt,
     this.durationMinutes = const Value.absent(),
     this.type = const Value.absent(),
     this.notes = const Value.absent(),
+    this.einnahmeAnfahrt = const Value.absent(),
+    this.einnahmeProTier = const Value.absent(),
+    this.einnahmeTrinkgeld = const Value.absent(),
     this.isDone = const Value.absent(),
     this.createdAt = const Value.absent(),
-  }) : horseId = Value(horseId),
+  }) : ownerId = Value(ownerId),
        scheduledAt = Value(scheduledAt);
   static Insertable<Appointment> custom({
     Expression<int>? id,
-    Expression<int>? horseId,
+    Expression<int>? ownerId,
     Expression<DateTime>? scheduledAt,
     Expression<int>? durationMinutes,
     Expression<String>? type,
     Expression<String>? notes,
+    Expression<double>? einnahmeAnfahrt,
+    Expression<double>? einnahmeProTier,
+    Expression<double>? einnahmeTrinkgeld,
     Expression<bool>? isDone,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (horseId != null) 'horse_id': horseId,
+      if (ownerId != null) 'owner_id': ownerId,
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
       if (durationMinutes != null) 'duration_minutes': durationMinutes,
       if (type != null) 'type': type,
       if (notes != null) 'notes': notes,
+      if (einnahmeAnfahrt != null) 'einnahme_anfahrt': einnahmeAnfahrt,
+      if (einnahmeProTier != null) 'einnahme_pro_tier': einnahmeProTier,
+      if (einnahmeTrinkgeld != null) 'einnahme_trinkgeld': einnahmeTrinkgeld,
       if (isDone != null) 'is_done': isDone,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -2310,21 +2586,27 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
 
   AppointmentsCompanion copyWith({
     Value<int>? id,
-    Value<int>? horseId,
+    Value<int>? ownerId,
     Value<DateTime>? scheduledAt,
     Value<int>? durationMinutes,
     Value<String>? type,
     Value<String?>? notes,
+    Value<double>? einnahmeAnfahrt,
+    Value<double>? einnahmeProTier,
+    Value<double>? einnahmeTrinkgeld,
     Value<bool>? isDone,
     Value<DateTime>? createdAt,
   }) {
     return AppointmentsCompanion(
       id: id ?? this.id,
-      horseId: horseId ?? this.horseId,
+      ownerId: ownerId ?? this.ownerId,
       scheduledAt: scheduledAt ?? this.scheduledAt,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       type: type ?? this.type,
       notes: notes ?? this.notes,
+      einnahmeAnfahrt: einnahmeAnfahrt ?? this.einnahmeAnfahrt,
+      einnahmeProTier: einnahmeProTier ?? this.einnahmeProTier,
+      einnahmeTrinkgeld: einnahmeTrinkgeld ?? this.einnahmeTrinkgeld,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -2336,8 +2618,8 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (horseId.present) {
-      map['horse_id'] = Variable<int>(horseId.value);
+    if (ownerId.present) {
+      map['owner_id'] = Variable<int>(ownerId.value);
     }
     if (scheduledAt.present) {
       map['scheduled_at'] = Variable<DateTime>(scheduledAt.value);
@@ -2350,6 +2632,15 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
+    }
+    if (einnahmeAnfahrt.present) {
+      map['einnahme_anfahrt'] = Variable<double>(einnahmeAnfahrt.value);
+    }
+    if (einnahmeProTier.present) {
+      map['einnahme_pro_tier'] = Variable<double>(einnahmeProTier.value);
+    }
+    if (einnahmeTrinkgeld.present) {
+      map['einnahme_trinkgeld'] = Variable<double>(einnahmeTrinkgeld.value);
     }
     if (isDone.present) {
       map['is_done'] = Variable<bool>(isDone.value);
@@ -2364,11 +2655,14 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   String toString() {
     return (StringBuffer('AppointmentsCompanion(')
           ..write('id: $id, ')
-          ..write('horseId: $horseId, ')
+          ..write('ownerId: $ownerId, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('type: $type, ')
           ..write('notes: $notes, ')
+          ..write('einnahmeAnfahrt: $einnahmeAnfahrt, ')
+          ..write('einnahmeProTier: $einnahmeProTier, ')
+          ..write('einnahmeTrinkgeld: $einnahmeTrinkgeld, ')
           ..write('isDone: $isDone, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -2407,6 +2701,7 @@ typedef $$OwnersTableCreateCompanionBuilder =
       Value<String?> email,
       Value<String?> address,
       Value<String?> notes,
+      Value<String> kategorie,
       Value<bool> isArchived,
       Value<DateTime> createdAt,
     });
@@ -2418,6 +2713,7 @@ typedef $$OwnersTableUpdateCompanionBuilder =
       Value<String?> email,
       Value<String?> address,
       Value<String?> notes,
+      Value<String> kategorie,
       Value<bool> isArchived,
       Value<DateTime> createdAt,
     });
@@ -2440,6 +2736,24 @@ final class $$OwnersTableReferences
     ).filter((f) => f.ownerId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_horsesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$AppointmentsTable, List<Appointment>>
+  _appointmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.appointments,
+    aliasName: $_aliasNameGenerator(db.owners.id, db.appointments.ownerId),
+  );
+
+  $$AppointmentsTableProcessedTableManager get appointmentsRefs {
+    final manager = $$AppointmentsTableTableManager(
+      $_db,
+      $_db.appointments,
+    ).filter((f) => f.ownerId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_appointmentsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2485,6 +2799,11 @@ class $$OwnersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get kategorie => $composableBuilder(
+    column: $table.kategorie,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isArchived => $composableBuilder(
     column: $table.isArchived,
     builder: (column) => ColumnFilters(column),
@@ -2511,6 +2830,31 @@ class $$OwnersTableFilterComposer
           }) => $$HorsesTableFilterComposer(
             $db: $db,
             $table: $db.horses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> appointmentsRefs(
+    Expression<bool> Function($$AppointmentsTableFilterComposer f) f,
+  ) {
+    final $$AppointmentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.appointments,
+      getReferencedColumn: (t) => t.ownerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AppointmentsTableFilterComposer(
+            $db: $db,
+            $table: $db.appointments,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2560,6 +2904,11 @@ class $$OwnersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get kategorie => $composableBuilder(
+    column: $table.kategorie,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isArchived => $composableBuilder(
     column: $table.isArchived,
     builder: (column) => ColumnOrderings(column),
@@ -2598,6 +2947,9 @@ class $$OwnersTableAnnotationComposer
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
+  GeneratedColumn<String> get kategorie =>
+      $composableBuilder(column: $table.kategorie, builder: (column) => column);
+
   GeneratedColumn<bool> get isArchived => $composableBuilder(
     column: $table.isArchived,
     builder: (column) => column,
@@ -2630,6 +2982,31 @@ class $$OwnersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> appointmentsRefs<T extends Object>(
+    Expression<T> Function($$AppointmentsTableAnnotationComposer a) f,
+  ) {
+    final $$AppointmentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.appointments,
+      getReferencedColumn: (t) => t.ownerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AppointmentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.appointments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$OwnersTableTableManager
@@ -2645,7 +3022,7 @@ class $$OwnersTableTableManager
           $$OwnersTableUpdateCompanionBuilder,
           (Owner, $$OwnersTableReferences),
           Owner,
-          PrefetchHooks Function({bool horsesRefs})
+          PrefetchHooks Function({bool horsesRefs, bool appointmentsRefs})
         > {
   $$OwnersTableTableManager(_$AppDatabase db, $OwnersTable table)
     : super(
@@ -2666,6 +3043,7 @@ class $$OwnersTableTableManager
                 Value<String?> email = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<String> kategorie = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => OwnersCompanion(
@@ -2675,6 +3053,7 @@ class $$OwnersTableTableManager
                 email: email,
                 address: address,
                 notes: notes,
+                kategorie: kategorie,
                 isArchived: isArchived,
                 createdAt: createdAt,
               ),
@@ -2686,6 +3065,7 @@ class $$OwnersTableTableManager
                 Value<String?> email = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<String> kategorie = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => OwnersCompanion.insert(
@@ -2695,6 +3075,7 @@ class $$OwnersTableTableManager
                 email: email,
                 address: address,
                 notes: notes,
+                kategorie: kategorie,
                 isArchived: isArchived,
                 createdAt: createdAt,
               ),
@@ -2704,29 +3085,55 @@ class $$OwnersTableTableManager
                     (e.readTable(table), $$OwnersTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({horsesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (horsesRefs) db.horses],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (horsesRefs)
-                    await $_getPrefetchedData<Owner, $OwnersTable, Horse>(
-                      currentTable: table,
-                      referencedTable: $$OwnersTableReferences._horsesRefsTable(
-                        db,
-                      ),
-                      managerFromTypedResult: (p0) =>
-                          $$OwnersTableReferences(db, table, p0).horsesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.ownerId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({horsesRefs = false, appointmentsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (horsesRefs) db.horses,
+                    if (appointmentsRefs) db.appointments,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (horsesRefs)
+                        await $_getPrefetchedData<Owner, $OwnersTable, Horse>(
+                          currentTable: table,
+                          referencedTable: $$OwnersTableReferences
+                              ._horsesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$OwnersTableReferences(db, table, p0).horsesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.ownerId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (appointmentsRefs)
+                        await $_getPrefetchedData<
+                          Owner,
+                          $OwnersTable,
+                          Appointment
+                        >(
+                          currentTable: table,
+                          referencedTable: $$OwnersTableReferences
+                              ._appointmentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$OwnersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).appointmentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.ownerId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2743,17 +3150,19 @@ typedef $$OwnersTableProcessedTableManager =
       $$OwnersTableUpdateCompanionBuilder,
       (Owner, $$OwnersTableReferences),
       Owner,
-      PrefetchHooks Function({bool horsesRefs})
+      PrefetchHooks Function({bool horsesRefs, bool appointmentsRefs})
     >;
 typedef $$HorsesTableCreateCompanionBuilder =
     HorsesCompanion Function({
       Value<int> id,
       required int ownerId,
       required String name,
+      Value<String> animalType,
       Value<String?> breed,
       Value<int?> birthYear,
       Value<String?> notes,
       Value<String?> photoPath,
+      Value<String> kategorie,
       Value<bool> isArchived,
       Value<DateTime> createdAt,
     });
@@ -2762,10 +3171,12 @@ typedef $$HorsesTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> ownerId,
       Value<String> name,
+      Value<String> animalType,
       Value<String?> breed,
       Value<int?> birthYear,
       Value<String?> notes,
       Value<String?> photoPath,
+      Value<String> kategorie,
       Value<bool> isArchived,
       Value<DateTime> createdAt,
     });
@@ -2809,24 +3220,6 @@ final class $$HorsesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
-
-  static MultiTypedResultKey<$AppointmentsTable, List<Appointment>>
-  _appointmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.appointments,
-    aliasName: $_aliasNameGenerator(db.horses.id, db.appointments.horseId),
-  );
-
-  $$AppointmentsTableProcessedTableManager get appointmentsRefs {
-    final manager = $$AppointmentsTableTableManager(
-      $_db,
-      $_db.appointments,
-    ).filter((f) => f.horseId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_appointmentsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
 }
 
 class $$HorsesTableFilterComposer
@@ -2848,6 +3241,11 @@ class $$HorsesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get animalType => $composableBuilder(
+    column: $table.animalType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get breed => $composableBuilder(
     column: $table.breed,
     builder: (column) => ColumnFilters(column),
@@ -2865,6 +3263,11 @@ class $$HorsesTableFilterComposer
 
   ColumnFilters<String> get photoPath => $composableBuilder(
     column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kategorie => $composableBuilder(
+    column: $table.kategorie,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2925,31 +3328,6 @@ class $$HorsesTableFilterComposer
     );
     return f(composer);
   }
-
-  Expression<bool> appointmentsRefs(
-    Expression<bool> Function($$AppointmentsTableFilterComposer f) f,
-  ) {
-    final $$AppointmentsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.appointments,
-      getReferencedColumn: (t) => t.horseId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AppointmentsTableFilterComposer(
-            $db: $db,
-            $table: $db.appointments,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$HorsesTableOrderingComposer
@@ -2971,6 +3349,11 @@ class $$HorsesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get animalType => $composableBuilder(
+    column: $table.animalType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get breed => $composableBuilder(
     column: $table.breed,
     builder: (column) => ColumnOrderings(column),
@@ -2988,6 +3371,11 @@ class $$HorsesTableOrderingComposer
 
   ColumnOrderings<String> get photoPath => $composableBuilder(
     column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kategorie => $composableBuilder(
+    column: $table.kategorie,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3040,6 +3428,11 @@ class $$HorsesTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
+  GeneratedColumn<String> get animalType => $composableBuilder(
+    column: $table.animalType,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get breed =>
       $composableBuilder(column: $table.breed, builder: (column) => column);
 
@@ -3051,6 +3444,9 @@ class $$HorsesTableAnnotationComposer
 
   GeneratedColumn<String> get photoPath =>
       $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get kategorie =>
+      $composableBuilder(column: $table.kategorie, builder: (column) => column);
 
   GeneratedColumn<bool> get isArchived => $composableBuilder(
     column: $table.isArchived,
@@ -3107,31 +3503,6 @@ class $$HorsesTableAnnotationComposer
     );
     return f(composer);
   }
-
-  Expression<T> appointmentsRefs<T extends Object>(
-    Expression<T> Function($$AppointmentsTableAnnotationComposer a) f,
-  ) {
-    final $$AppointmentsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.appointments,
-      getReferencedColumn: (t) => t.horseId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AppointmentsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.appointments,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$HorsesTableTableManager
@@ -3147,11 +3518,7 @@ class $$HorsesTableTableManager
           $$HorsesTableUpdateCompanionBuilder,
           (Horse, $$HorsesTableReferences),
           Horse,
-          PrefetchHooks Function({
-            bool ownerId,
-            bool treatmentsRefs,
-            bool appointmentsRefs,
-          })
+          PrefetchHooks Function({bool ownerId, bool treatmentsRefs})
         > {
   $$HorsesTableTableManager(_$AppDatabase db, $HorsesTable table)
     : super(
@@ -3169,20 +3536,24 @@ class $$HorsesTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> ownerId = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String> animalType = const Value.absent(),
                 Value<String?> breed = const Value.absent(),
                 Value<int?> birthYear = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<String> kategorie = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => HorsesCompanion(
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                animalType: animalType,
                 breed: breed,
                 birthYear: birthYear,
                 notes: notes,
                 photoPath: photoPath,
+                kategorie: kategorie,
                 isArchived: isArchived,
                 createdAt: createdAt,
               ),
@@ -3191,20 +3562,24 @@ class $$HorsesTableTableManager
                 Value<int> id = const Value.absent(),
                 required int ownerId,
                 required String name,
+                Value<String> animalType = const Value.absent(),
                 Value<String?> breed = const Value.absent(),
                 Value<int?> birthYear = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<String> kategorie = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => HorsesCompanion.insert(
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                animalType: animalType,
                 breed: breed,
                 birthYear: birthYear,
                 notes: notes,
                 photoPath: photoPath,
+                kategorie: kategorie,
                 isArchived: isArchived,
                 createdAt: createdAt,
               ),
@@ -3214,98 +3589,59 @@ class $$HorsesTableTableManager
                     (e.readTable(table), $$HorsesTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({
-                ownerId = false,
-                treatmentsRefs = false,
-                appointmentsRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (treatmentsRefs) db.treatments,
-                    if (appointmentsRefs) db.appointments,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (ownerId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.ownerId,
-                                    referencedTable: $$HorsesTableReferences
-                                        ._ownerIdTable(db),
-                                    referencedColumn: $$HorsesTableReferences
-                                        ._ownerIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
+          prefetchHooksCallback: ({ownerId = false, treatmentsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (treatmentsRefs) db.treatments],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (ownerId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.ownerId,
+                                referencedTable: $$HorsesTableReferences
+                                    ._ownerIdTable(db),
+                                referencedColumn: $$HorsesTableReferences
+                                    ._ownerIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
 
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (treatmentsRefs)
-                        await $_getPrefetchedData<
-                          Horse,
-                          $HorsesTable,
-                          Treatment
-                        >(
-                          currentTable: table,
-                          referencedTable: $$HorsesTableReferences
-                              ._treatmentsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$HorsesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).treatmentsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.horseId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (appointmentsRefs)
-                        await $_getPrefetchedData<
-                          Horse,
-                          $HorsesTable,
-                          Appointment
-                        >(
-                          currentTable: table,
-                          referencedTable: $$HorsesTableReferences
-                              ._appointmentsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$HorsesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).appointmentsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.horseId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+                    return state;
                   },
-                );
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (treatmentsRefs)
+                    await $_getPrefetchedData<Horse, $HorsesTable, Treatment>(
+                      currentTable: table,
+                      referencedTable: $$HorsesTableReferences
+                          ._treatmentsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$HorsesTableReferences(db, table, p0).treatmentsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.horseId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
+            );
+          },
         ),
       );
 }
@@ -3322,11 +3658,7 @@ typedef $$HorsesTableProcessedTableManager =
       $$HorsesTableUpdateCompanionBuilder,
       (Horse, $$HorsesTableReferences),
       Horse,
-      PrefetchHooks Function({
-        bool ownerId,
-        bool treatmentsRefs,
-        bool appointmentsRefs,
-      })
+      PrefetchHooks Function({bool ownerId, bool treatmentsRefs})
     >;
 typedef $$TreatmentsTableCreateCompanionBuilder =
     TreatmentsCompanion Function({
@@ -4104,22 +4436,28 @@ typedef $$TreatmentPhotosTableProcessedTableManager =
 typedef $$AppointmentsTableCreateCompanionBuilder =
     AppointmentsCompanion Function({
       Value<int> id,
-      required int horseId,
+      required int ownerId,
       required DateTime scheduledAt,
       Value<int> durationMinutes,
       Value<String> type,
       Value<String?> notes,
+      Value<double> einnahmeAnfahrt,
+      Value<double> einnahmeProTier,
+      Value<double> einnahmeTrinkgeld,
       Value<bool> isDone,
       Value<DateTime> createdAt,
     });
 typedef $$AppointmentsTableUpdateCompanionBuilder =
     AppointmentsCompanion Function({
       Value<int> id,
-      Value<int> horseId,
+      Value<int> ownerId,
       Value<DateTime> scheduledAt,
       Value<int> durationMinutes,
       Value<String> type,
       Value<String?> notes,
+      Value<double> einnahmeAnfahrt,
+      Value<double> einnahmeProTier,
+      Value<double> einnahmeTrinkgeld,
       Value<bool> isDone,
       Value<DateTime> createdAt,
     });
@@ -4128,18 +4466,18 @@ final class $$AppointmentsTableReferences
     extends BaseReferences<_$AppDatabase, $AppointmentsTable, Appointment> {
   $$AppointmentsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $HorsesTable _horseIdTable(_$AppDatabase db) => db.horses.createAlias(
-    $_aliasNameGenerator(db.appointments.horseId, db.horses.id),
+  static $OwnersTable _ownerIdTable(_$AppDatabase db) => db.owners.createAlias(
+    $_aliasNameGenerator(db.appointments.ownerId, db.owners.id),
   );
 
-  $$HorsesTableProcessedTableManager get horseId {
-    final $_column = $_itemColumn<int>('horse_id')!;
+  $$OwnersTableProcessedTableManager get ownerId {
+    final $_column = $_itemColumn<int>('owner_id')!;
 
-    final manager = $$HorsesTableTableManager(
+    final manager = $$OwnersTableTableManager(
       $_db,
-      $_db.horses,
+      $_db.owners,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_horseIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_ownerIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -4181,6 +4519,21 @@ class $$AppointmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get einnahmeAnfahrt => $composableBuilder(
+    column: $table.einnahmeAnfahrt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get einnahmeProTier => $composableBuilder(
+    column: $table.einnahmeProTier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get einnahmeTrinkgeld => $composableBuilder(
+    column: $table.einnahmeTrinkgeld,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isDone => $composableBuilder(
     column: $table.isDone,
     builder: (column) => ColumnFilters(column),
@@ -4191,20 +4544,20 @@ class $$AppointmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$HorsesTableFilterComposer get horseId {
-    final $$HorsesTableFilterComposer composer = $composerBuilder(
+  $$OwnersTableFilterComposer get ownerId {
+    final $$OwnersTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.horseId,
-      referencedTable: $db.horses,
+      getCurrentColumn: (t) => t.ownerId,
+      referencedTable: $db.owners,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$HorsesTableFilterComposer(
+          }) => $$OwnersTableFilterComposer(
             $db: $db,
-            $table: $db.horses,
+            $table: $db.owners,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4249,6 +4602,21 @@ class $$AppointmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get einnahmeAnfahrt => $composableBuilder(
+    column: $table.einnahmeAnfahrt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get einnahmeProTier => $composableBuilder(
+    column: $table.einnahmeProTier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get einnahmeTrinkgeld => $composableBuilder(
+    column: $table.einnahmeTrinkgeld,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isDone => $composableBuilder(
     column: $table.isDone,
     builder: (column) => ColumnOrderings(column),
@@ -4259,20 +4627,20 @@ class $$AppointmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$HorsesTableOrderingComposer get horseId {
-    final $$HorsesTableOrderingComposer composer = $composerBuilder(
+  $$OwnersTableOrderingComposer get ownerId {
+    final $$OwnersTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.horseId,
-      referencedTable: $db.horses,
+      getCurrentColumn: (t) => t.ownerId,
+      referencedTable: $db.owners,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$HorsesTableOrderingComposer(
+          }) => $$OwnersTableOrderingComposer(
             $db: $db,
-            $table: $db.horses,
+            $table: $db.owners,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4311,26 +4679,41 @@ class $$AppointmentsTableAnnotationComposer
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
+  GeneratedColumn<double> get einnahmeAnfahrt => $composableBuilder(
+    column: $table.einnahmeAnfahrt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get einnahmeProTier => $composableBuilder(
+    column: $table.einnahmeProTier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get einnahmeTrinkgeld => $composableBuilder(
+    column: $table.einnahmeTrinkgeld,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get isDone =>
       $composableBuilder(column: $table.isDone, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  $$HorsesTableAnnotationComposer get horseId {
-    final $$HorsesTableAnnotationComposer composer = $composerBuilder(
+  $$OwnersTableAnnotationComposer get ownerId {
+    final $$OwnersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.horseId,
-      referencedTable: $db.horses,
+      getCurrentColumn: (t) => t.ownerId,
+      referencedTable: $db.owners,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$HorsesTableAnnotationComposer(
+          }) => $$OwnersTableAnnotationComposer(
             $db: $db,
-            $table: $db.horses,
+            $table: $db.owners,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4354,7 +4737,7 @@ class $$AppointmentsTableTableManager
           $$AppointmentsTableUpdateCompanionBuilder,
           (Appointment, $$AppointmentsTableReferences),
           Appointment,
-          PrefetchHooks Function({bool horseId})
+          PrefetchHooks Function({bool ownerId})
         > {
   $$AppointmentsTableTableManager(_$AppDatabase db, $AppointmentsTable table)
     : super(
@@ -4370,40 +4753,52 @@ class $$AppointmentsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<int> horseId = const Value.absent(),
+                Value<int> ownerId = const Value.absent(),
                 Value<DateTime> scheduledAt = const Value.absent(),
                 Value<int> durationMinutes = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<double> einnahmeAnfahrt = const Value.absent(),
+                Value<double> einnahmeProTier = const Value.absent(),
+                Value<double> einnahmeTrinkgeld = const Value.absent(),
                 Value<bool> isDone = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => AppointmentsCompanion(
                 id: id,
-                horseId: horseId,
+                ownerId: ownerId,
                 scheduledAt: scheduledAt,
                 durationMinutes: durationMinutes,
                 type: type,
                 notes: notes,
+                einnahmeAnfahrt: einnahmeAnfahrt,
+                einnahmeProTier: einnahmeProTier,
+                einnahmeTrinkgeld: einnahmeTrinkgeld,
                 isDone: isDone,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required int horseId,
+                required int ownerId,
                 required DateTime scheduledAt,
                 Value<int> durationMinutes = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<double> einnahmeAnfahrt = const Value.absent(),
+                Value<double> einnahmeProTier = const Value.absent(),
+                Value<double> einnahmeTrinkgeld = const Value.absent(),
                 Value<bool> isDone = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => AppointmentsCompanion.insert(
                 id: id,
-                horseId: horseId,
+                ownerId: ownerId,
                 scheduledAt: scheduledAt,
                 durationMinutes: durationMinutes,
                 type: type,
                 notes: notes,
+                einnahmeAnfahrt: einnahmeAnfahrt,
+                einnahmeProTier: einnahmeProTier,
+                einnahmeTrinkgeld: einnahmeTrinkgeld,
                 isDone: isDone,
                 createdAt: createdAt,
               ),
@@ -4415,7 +4810,7 @@ class $$AppointmentsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({horseId = false}) {
+          prefetchHooksCallback: ({ownerId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -4435,15 +4830,15 @@ class $$AppointmentsTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (horseId) {
+                    if (ownerId) {
                       state =
                           state.withJoin(
                                 currentTable: table,
-                                currentColumn: table.horseId,
+                                currentColumn: table.ownerId,
                                 referencedTable: $$AppointmentsTableReferences
-                                    ._horseIdTable(db),
+                                    ._ownerIdTable(db),
                                 referencedColumn: $$AppointmentsTableReferences
-                                    ._horseIdTable(db)
+                                    ._ownerIdTable(db)
                                     .id,
                               )
                               as T;
@@ -4472,7 +4867,7 @@ typedef $$AppointmentsTableProcessedTableManager =
       $$AppointmentsTableUpdateCompanionBuilder,
       (Appointment, $$AppointmentsTableReferences),
       Appointment,
-      PrefetchHooks Function({bool horseId})
+      PrefetchHooks Function({bool ownerId})
     >;
 
 class $AppDatabaseManager {

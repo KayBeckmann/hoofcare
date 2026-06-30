@@ -18,11 +18,14 @@ final _horseTreatmentsProvider = FutureProvider.family<List<Treatment>, int>((re
   return ref.watch(databaseProvider).getTreatmentsForHorse(horseId);
 });
 
-final _horseAppointmentsProvider = FutureProvider.family<List<Appointment>, int>((ref, horseId) async {
+final _horseOwnerAppointmentsProvider = FutureProvider.family<List<Appointment>, int>((ref, horseId) async {
   final db = ref.watch(databaseProvider);
-  final now = DateTime.now();
-  final appts = await db.getAppointmentsForMonth(now);
-  return appts.where((a) => a.horseId == horseId).toList();
+  final horse = await db.getHorse(horseId);
+  return db.getAppointmentsForOwner(horse.ownerId);
+});
+
+final _horsePhotosProvider = FutureProvider.family<List<TreatmentPhoto>, int>((ref, horseId) {
+  return ref.watch(databaseProvider).getPhotosForHorse(horseId);
 });
 
 class HorseDetailScreen extends ConsumerStatefulWidget {
@@ -160,7 +163,11 @@ class _HeroHeader extends StatelessWidget {
                     ),
               ),
               Text(
-                [if (horse.breed != null) horse.breed!, if (horse.birthYear != null) '${DateTime.now().year - horse.birthYear!} Jahre'].join(' · '),
+                [
+                  if (horse.animalType != 'Pferd') horse.animalType,
+                  if (horse.breed != null) horse.breed!,
+                  if (horse.birthYear != null) '${DateTime.now().year - horse.birthYear!} Jahre',
+                ].join(' · '),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70),
               ),
             ],
@@ -199,7 +206,11 @@ class _TreatmentTab extends ConsumerWidget {
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: treatments.length,
-          itemBuilder: (ctx, i) => _TreatmentCard(treatment: treatments[i]),
+          itemBuilder: (ctx, i) => _TreatmentCard(
+            treatment: treatments[i],
+            onTap: () => context.push('/treatments/${treatments[i].id}/edit', extra: treatments[i])
+                .then((_) => ref.invalidate(_horseTreatmentsProvider(horseId))),
+          ),
         );
       },
     );
@@ -208,7 +219,8 @@ class _TreatmentTab extends ConsumerWidget {
 
 class _TreatmentCard extends StatelessWidget {
   final Treatment treatment;
-  const _TreatmentCard({required this.treatment});
+  final VoidCallback onTap;
+  const _TreatmentCard({required this.treatment, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -217,63 +229,67 @@ class _TreatmentCard extends StatelessWidget {
     final day = DateFormat('dd', 'de_DE').format(treatment.date);
     final month = DateFormat('MMM', 'de_DE').format(treatment.date).toUpperCase();
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border(
-          left: BorderSide(
-            color: isAkut ? AppColors.chipAkutText : AppColors.primary,
-            width: 3,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border(
+            left: BorderSide(
+              color: isAkut ? AppColors.chipAkutText : AppColors.primary,
+              width: 3,
+            ),
           ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 36,
-              child: Column(
-                children: [
-                  Text(day, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
-                  Text(month, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.onSurfaceVariant)),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${treatment.treatmentType}...',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      StatusChip(label: isAkut ? 'AKUT' : 'REGULÄR', status: status),
-                    ],
-                  ),
-                  if (treatment.findings != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      treatment.findings!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 36,
+                child: Column(
+                  children: [
+                    Text(day, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                    Text(month, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.onSurfaceVariant)),
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            treatment.treatmentType,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        StatusChip(label: isAkut ? 'AKUT' : 'REGULÄR', status: status),
+                      ],
+                    ),
+                    if (treatment.findings != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        treatment.findings!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, size: 18, color: AppColors.onSurfaceVariant),
+            ],
+          ),
         ),
       ),
     );
@@ -286,7 +302,7 @@ class _AppointmentTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final apptAsync = ref.watch(_horseAppointmentsProvider(horseId));
+    final apptAsync = ref.watch(_horseOwnerAppointmentsProvider(horseId));
 
     return apptAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -294,7 +310,7 @@ class _AppointmentTab extends ConsumerWidget {
       data: (appts) {
         if (appts.isEmpty) {
           return Center(
-            child: Text('Keine Termine diesen Monat.',
+            child: Text('Keine Termine für diesen Besitzer.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant)),
           );
         }
@@ -304,12 +320,20 @@ class _AppointmentTab extends ConsumerWidget {
           itemBuilder: (ctx, i) {
             final a = appts[i];
             final fmt = DateFormat('dd.MM.yyyy HH:mm', 'de_DE');
+            final total = a.einnahmeAnfahrt + a.einnahmeProTier + a.einnahmeTrinkgeld;
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: const Icon(Icons.event, color: AppColors.primary),
                 title: Text(a.type),
-                subtitle: Text(fmt.format(a.scheduledAt)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(fmt.format(a.scheduledAt)),
+                    if (total > 0)
+                      Text('${total.toStringAsFixed(2)} €', style: const TextStyle(color: AppColors.secondary)),
+                  ],
+                ),
                 trailing: StatusChip.fromString(a.isDone ? 'Regulär' : 'Geplant'),
               ),
             );
@@ -326,11 +350,100 @@ class _PhotoTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Text(
-        'Fotos werden nach Behandlungseinträgen verwaltet.',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
-        textAlign: TextAlign.center,
+    final photosAsync = ref.watch(_horsePhotosProvider(horseId));
+
+    return photosAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Fehler: $e')),
+      data: (photos) {
+        final existing = photos.where((p) => File(p.path).existsSync()).toList();
+        if (existing.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.photo_library_outlined, size: 48, color: AppColors.outlineVariant),
+                const SizedBox(height: 12),
+                Text(
+                  'Noch keine Fotos vorhanden.\nFotos können beim Behandlungseintrag hinzugefügt werden.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+        return GridView.builder(
+          padding: const EdgeInsets.all(8),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+          ),
+          itemCount: existing.length,
+          itemBuilder: (ctx, i) => GestureDetector(
+            onTap: () => _showFullscreen(context, existing, i),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.file(
+                File(existing[i].path),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFullscreen(BuildContext context, List<TreatmentPhoto> photos, int initial) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => _FullscreenGallery(photos: photos, initialIndex: initial),
+    ));
+  }
+}
+
+class _FullscreenGallery extends StatefulWidget {
+  final List<TreatmentPhoto> photos;
+  final int initialIndex;
+  const _FullscreenGallery({required this.photos, required this.initialIndex});
+
+  @override
+  State<_FullscreenGallery> createState() => _FullscreenGalleryState();
+}
+
+class _FullscreenGalleryState extends State<_FullscreenGallery> {
+  late PageController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text('${widget.initialIndex + 1} / ${widget.photos.length}'),
+      ),
+      body: PageView.builder(
+        controller: _controller,
+        itemCount: widget.photos.length,
+        itemBuilder: (ctx, i) => InteractiveViewer(
+          child: Center(
+            child: Image.file(File(widget.photos[i].path)),
+          ),
+        ),
       ),
     );
   }

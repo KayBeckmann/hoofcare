@@ -7,6 +7,7 @@ import '../../core/db/database.dart';
 import '../../core/db/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/horse_avatar.dart';
+import '../../shared/widgets/kategorie_badge.dart';
 
 final _ownerDetailProvider = FutureProvider.family<Owner, int>((ref, id) {
   return ref.watch(databaseProvider).getOwner(id);
@@ -43,7 +44,14 @@ class _OwnerDetailView extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(owner.name),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: Text(owner.name, overflow: TextOverflow.ellipsis)),
+            const SizedBox(width: 8),
+            KategorieBadge(kategorie: owner.kategorie),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -63,10 +71,10 @@ class _OwnerDetailView extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pferde', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+              Text('Tiere', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
               TextButton.icon(
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Pferd hinzufügen'),
+                label: const Text('Tier hinzufügen'),
                 onPressed: () => context.push('/owners/${owner.id}/horses/new')
                     .then((_) => ref.invalidate(_ownerHorsesProvider(owner.id))),
               ),
@@ -82,7 +90,7 @@ class _OwnerDetailView extends ConsumerWidget {
                   padding: const EdgeInsets.all(24),
                   child: Center(
                     child: Text(
-                      'Noch keine Pferde angelegt.',
+                      'Noch keine Tiere angelegt.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
                     ),
                   ),
@@ -169,12 +177,23 @@ class _HorseTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(horse.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
-                  if (horse.breed != null || horse.birthYear != null)
-                    Text(
-                      [if (horse.breed != null) horse.breed!, if (horse.birthYear != null) '${horse.birthYear}'].join(' · '),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(horse.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                      ),
+                      const SizedBox(width: 6),
+                      KategorieBadge(kategorie: horse.kategorie),
+                    ],
+                  ),
+                  Text(
+                    [
+                      if (horse.animalType != 'Pferd') horse.animalType,
+                      if (horse.breed != null) horse.breed!,
+                      if (horse.birthYear != null) '${horse.birthYear}',
+                    ].join(' · '),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+                  ),
                 ],
               ),
             ),

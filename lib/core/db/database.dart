@@ -14,7 +14,21 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(owners, owners.kategorie);
+        await m.addColumn(horses, horses.animalType);
+        await m.addColumn(horses, horses.kategorie);
+        // Appointments changed horseId → ownerId and added income columns
+        await m.drop(appointments);
+        await m.create(appointments);
+      }
+    },
+  );
 
   // --- Owners ---
   Future<List<Owner>> getAllOwners() =>
@@ -94,6 +108,16 @@ class AppDatabase extends _$AppDatabase {
             ..where((p) => p.treatmentId.equals(treatmentId)))
           .get();
 
+  Future<List<TreatmentPhoto>> getPhotosForHorse(int horseId) async {
+    final horseTreatments = await getTreatmentsForHorse(horseId);
+    final result = <TreatmentPhoto>[];
+    for (final t in horseTreatments) {
+      final photos = await getPhotosForTreatment(t.id);
+      result.addAll(photos);
+    }
+    return result;
+  }
+
   Future<int> insertTreatmentPhoto(TreatmentPhotosCompanion entry) =>
       into(treatmentPhotos).insert(entry);
 
@@ -122,6 +146,12 @@ class AppDatabase extends _$AppDatabase {
           ..orderBy([(a) => OrderingTerm.asc(a.scheduledAt)]))
         .get();
   }
+
+  Future<List<Appointment>> getAppointmentsForOwner(int ownerId) =>
+      (select(appointments)
+            ..where((a) => a.ownerId.equals(ownerId))
+            ..orderBy([(a) => OrderingTerm.desc(a.scheduledAt)]))
+          .get();
 
   Future<List<Appointment>> getUpcomingAppointments({int limit = 5}) {
     final now = DateTime.now();

@@ -12,15 +12,14 @@ import '../../shared/widgets/status_chip.dart';
 final _selectedDayProvider = StateProvider<DateTime>((ref) => DateTime.now());
 final _focusedMonthProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
-final _dayAppointmentsProvider = FutureProvider<List<_ApptWithHorse>>((ref) async {
+final _dayAppointmentsProvider = FutureProvider<List<_ApptWithOwner>>((ref) async {
   final day = ref.watch(_selectedDayProvider);
   final db = ref.watch(databaseProvider);
   final appts = await db.getAppointmentsForDay(day);
-  final result = <_ApptWithHorse>[];
+  final result = <_ApptWithOwner>[];
   for (final a in appts) {
-    final horse = await db.getHorse(a.horseId);
-    final owner = await db.getOwner(horse.ownerId);
-    result.add(_ApptWithHorse(a, horse, owner));
+    final owner = await db.getOwner(a.ownerId);
+    result.add(_ApptWithOwner(a, owner));
   }
   return result;
 });
@@ -148,7 +147,7 @@ class _DayAppointmentList extends ConsumerWidget {
 }
 
 class _ApptCard extends ConsumerWidget {
-  final _ApptWithHorse item;
+  final _ApptWithOwner item;
   const _ApptCard({required this.item});
 
   @override
@@ -157,6 +156,7 @@ class _ApptCard extends ConsumerWidget {
     final start = DateFormat('HH:mm').format(a.scheduledAt);
     final end = DateFormat('HH:mm').format(a.scheduledAt.add(Duration(minutes: a.durationMinutes)));
     final chipLabel = a.isDone ? 'Regulär' : a.type == 'Akutbesuch' ? 'Akut' : 'Geplant';
+    final total = a.einnahmeAnfahrt + a.einnahmeProTier + a.einnahmeTrinkgeld;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -190,7 +190,7 @@ class _ApptCard extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('Pferd: ${item.horse.name}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant)),
+                  Text(a.type, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant)),
                   if (item.owner.address != null) ...[
                     const SizedBox(height: 4),
                     Row(
@@ -203,6 +203,19 @@ class _ApptCard extends ConsumerWidget {
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
                             maxLines: 2,
                           ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (total > 0) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.euro_outlined, size: 12, color: AppColors.secondary),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${total.toStringAsFixed(2)} €',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -225,9 +238,8 @@ class _ApptCard extends ConsumerWidget {
   }
 }
 
-class _ApptWithHorse {
+class _ApptWithOwner {
   final Appointment appt;
-  final Horse horse;
   final Owner owner;
-  _ApptWithHorse(this.appt, this.horse, this.owner);
+  _ApptWithOwner(this.appt, this.owner);
 }

@@ -7,6 +7,7 @@ import '../../core/db/database.dart';
 import '../../core/db/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/horse_avatar.dart';
+import '../../shared/widgets/kategorie_badge.dart';
 
 final ownersProvider = FutureProvider<List<Owner>>((ref) {
   return ref.watch(databaseProvider).getAllOwners();
@@ -150,12 +151,21 @@ class _OwnerTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        owner.name,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              owner.name,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          KategorieBadge(kategorie: owner.kategorie),
+                        ],
                       ),
                       Text(
-                        '$horseCount ${horseCount == 1 ? 'Pferd' : 'Pferde'}',
+                        '$horseCount ${horseCount == 1 ? 'Tier' : 'Tiere'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
                       ),
                     ],

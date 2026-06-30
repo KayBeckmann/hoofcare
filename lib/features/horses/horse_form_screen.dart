@@ -13,6 +13,8 @@ import '../../core/db/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/horse_avatar.dart';
 
+const _animalTypes = ['Pferd', 'Pony', 'Esel', 'Ziege', 'Schaf', 'Sonstiges'];
+
 class HorseFormScreen extends ConsumerStatefulWidget {
   final int ownerId;
   final Horse? horse;
@@ -29,6 +31,8 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
   late final TextEditingController _breed;
   late final TextEditingController _birthYear;
   late final TextEditingController _notes;
+  late String _animalType;
+  late String _kategorie;
   String? _photoPath;
   bool _saving = false;
 
@@ -40,6 +44,8 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
     _breed = TextEditingController(text: h?.breed ?? '');
     _birthYear = TextEditingController(text: h?.birthYear?.toString() ?? '');
     _notes = TextEditingController(text: h?.notes ?? '');
+    _animalType = h?.animalType ?? 'Pferd';
+    _kategorie = h?.kategorie ?? 'B';
     _photoPath = h?.photoPath;
   }
 
@@ -74,20 +80,24 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
       await db.insertHorse(HorsesCompanion(
         ownerId: Value(widget.ownerId),
         name: Value(_name.text.trim()),
+        animalType: Value(_animalType),
         breed: Value(_breed.text.trim().isEmpty ? null : _breed.text.trim()),
         birthYear: Value(year),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
         photoPath: Value(_photoPath),
+        kategorie: Value(_kategorie),
       ));
     } else {
       await db.updateHorse(HorsesCompanion(
         id: Value(widget.horse!.id),
         ownerId: Value(widget.ownerId),
         name: Value(_name.text.trim()),
+        animalType: Value(_animalType),
         breed: Value(_breed.text.trim().isEmpty ? null : _breed.text.trim()),
         birthYear: Value(year),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
         photoPath: Value(_photoPath),
+        kategorie: Value(_kategorie),
         isArchived: Value(widget.horse!.isArchived),
         createdAt: Value(widget.horse!.createdAt),
       ));
@@ -102,7 +112,7 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(isNew ? 'Neues Pferd' : 'Pferd bearbeiten'),
+        title: Text(isNew ? 'Neues Tier' : 'Tier bearbeiten'),
         actions: [
           IconButton(icon: const Icon(Icons.check), onPressed: _saving ? null : _save),
         ],
@@ -134,15 +144,29 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
             const SizedBox(height: 24),
             _field('Name *', _name, required: true),
             const SizedBox(height: 12),
+            // Tierart
+            Text('Tierart', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: _animalType,
+              decoration: const InputDecoration(),
+              items: _animalTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+              onChanged: (v) => setState(() => _animalType = v!),
+            ),
+            const SizedBox(height: 12),
             _field('Rasse', _breed),
             const SizedBox(height: 12),
             _field('Geburtsjahr', _birthYear, keyboardType: TextInputType.number),
             const SizedBox(height: 12),
             _field('Besonderheiten / Notizen', _notes, maxLines: 4),
+            const SizedBox(height: 16),
+            Text('Kategorie', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _KategorieSelector(value: _kategorie, onChanged: (v) => setState(() => _kategorie = v)),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _saving ? null : _save,
-              child: Text(isNew ? 'Pferd anlegen' : 'Änderungen speichern'),
+              child: Text(isNew ? 'Tier anlegen' : 'Änderungen speichern'),
             ),
           ],
         ),
@@ -170,6 +194,41 @@ class _HorseFormScreenState extends ConsumerState<HorseFormScreen> {
           decoration: const InputDecoration(),
         ),
       ],
+    );
+  }
+}
+
+class _KategorieSelector extends StatelessWidget {
+  final String value;
+  final ValueChanged<String> onChanged;
+  const _KategorieSelector({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<String>(
+      segments: const [
+        ButtonSegment(
+          value: 'A',
+          label: Text('A — Freundlich'),
+          icon: Icon(Icons.sentiment_very_satisfied_outlined),
+        ),
+        ButtonSegment(
+          value: 'B',
+          label: Text('B — Neutral'),
+          icon: Icon(Icons.sentiment_neutral_outlined),
+        ),
+        ButtonSegment(
+          value: 'C',
+          label: Text('C — Schwierig'),
+          icon: Icon(Icons.sentiment_very_dissatisfied_outlined),
+        ),
+      ],
+      selected: {value},
+      onSelectionChanged: (s) => onChanged(s.first),
+      style: SegmentedButton.styleFrom(
+        selectedBackgroundColor: AppColors.primary.withValues(alpha: 0.15),
+        selectedForegroundColor: AppColors.primary,
+      ),
     );
   }
 }

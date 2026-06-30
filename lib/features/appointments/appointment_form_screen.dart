@@ -10,29 +10,19 @@ import '../../core/theme/app_theme.dart';
 
 const _apptTypes = ['Erstbesuch', 'Folgebesuch', 'Akutbesuch', 'Kontrolle'];
 
-final _allHorsesProvider = FutureProvider<List<_HorseWithOwner>>((ref) async {
-  final db = ref.watch(databaseProvider);
-  final owners = await db.getAllOwners();
-  final result = <_HorseWithOwner>[];
-  for (final o in owners) {
-    final horses = await db.getHorsesForOwner(o.id);
-    for (final h in horses) {
-      result.add(_HorseWithOwner(h, o));
-    }
-  }
-  result.sort((a, b) => a.horse.name.compareTo(b.horse.name));
-  return result;
+final _allOwnersProvider = FutureProvider<List<Owner>>((ref) {
+  return ref.watch(databaseProvider).getAllOwners();
 });
 
 class AppointmentFormScreen extends ConsumerStatefulWidget {
   final Appointment? appointment;
-  final int? preselectedHorseId;
+  final int? preselectedOwnerId;
   final DateTime? preselectedDate;
 
   const AppointmentFormScreen({
     super.key,
     this.appointment,
-    this.preselectedHorseId,
+    this.preselectedOwnerId,
     this.preselectedDate,
   });
 
@@ -46,7 +36,10 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
   late int _duration;
   late String _type;
   late final TextEditingController _notes;
-  int? _selectedHorseId;
+  late final TextEditingController _einnahmeAnfahrt;
+  late final TextEditingController _einnahmeProTier;
+  late final TextEditingController _einnahmeTrinkgeld;
+  int? _selectedOwnerId;
   bool _saving = false;
 
   @override
@@ -59,12 +52,24 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
     _duration = a?.durationMinutes ?? 60;
     _type = a?.type ?? _apptTypes[1];
     _notes = TextEditingController(text: a?.notes ?? '');
-    _selectedHorseId = a?.horseId ?? widget.preselectedHorseId;
+    _einnahmeAnfahrt = TextEditingController(
+      text: a != null && a.einnahmeAnfahrt > 0 ? a.einnahmeAnfahrt.toStringAsFixed(2) : '',
+    );
+    _einnahmeProTier = TextEditingController(
+      text: a != null && a.einnahmeProTier > 0 ? a.einnahmeProTier.toStringAsFixed(2) : '',
+    );
+    _einnahmeTrinkgeld = TextEditingController(
+      text: a != null && a.einnahmeTrinkgeld > 0 ? a.einnahmeTrinkgeld.toStringAsFixed(2) : '',
+    );
+    _selectedOwnerId = a?.ownerId ?? widget.preselectedOwnerId;
   }
 
   @override
   void dispose() {
     _notes.dispose();
+    _einnahmeAnfahrt.dispose();
+    _einnahmeProTier.dispose();
+    _einnahmeTrinkgeld.dispose();
     super.dispose();
   }
 
@@ -83,9 +88,12 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
     if (picked != null) setState(() => _time = picked);
   }
 
+  double _parseEuro(TextEditingController ctrl) =>
+      double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 0.0;
+
   Future<void> _save() async {
-    if (_selectedHorseId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bitte ein Pferd auswählen.')));
+    if (_selectedOwnerId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bitte einen Kunden auswählen.')));
       return;
     }
     setState(() => _saving = true);
@@ -94,20 +102,26 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
 
     if (widget.appointment == null) {
       await db.insertAppointment(AppointmentsCompanion(
-        horseId: Value(_selectedHorseId!),
+        ownerId: Value(_selectedOwnerId!),
         scheduledAt: Value(scheduledAt),
         durationMinutes: Value(_duration),
         type: Value(_type),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
+        einnahmeAnfahrt: Value(_parseEuro(_einnahmeAnfahrt)),
+        einnahmeProTier: Value(_parseEuro(_einnahmeProTier)),
+        einnahmeTrinkgeld: Value(_parseEuro(_einnahmeTrinkgeld)),
       ));
     } else {
       await db.updateAppointment(AppointmentsCompanion(
         id: Value(widget.appointment!.id),
-        horseId: Value(_selectedHorseId!),
+        ownerId: Value(_selectedOwnerId!),
         scheduledAt: Value(scheduledAt),
         durationMinutes: Value(_duration),
         type: Value(_type),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
+        einnahmeAnfahrt: Value(_parseEuro(_einnahmeAnfahrt)),
+        einnahmeProTier: Value(_parseEuro(_einnahmeProTier)),
+        einnahmeTrinkgeld: Value(_parseEuro(_einnahmeTrinkgeld)),
         isDone: Value(widget.appointment!.isDone),
         createdAt: Value(widget.appointment!.createdAt),
       ));
@@ -120,7 +134,7 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
   Widget build(BuildContext context) {
     final isNew = widget.appointment == null;
     final dateFmt = DateFormat('dd.MM.yyyy');
-    final horsesAsync = ref.watch(_allHorsesProvider);
+    final ownersAsync = ref.watch(_allOwnersProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -133,21 +147,21 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Pferd auswählen
-          Text('Pferd', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
+          // Kunde auswählen
+          Text('Kunde', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 6),
-          horsesAsync.when(
+          ownersAsync.when(
             loading: () => const CircularProgressIndicator(),
             error: (e, _) => Text('Fehler: $e'),
-            data: (horses) => DropdownButtonFormField<int>(
-              value: _selectedHorseId,
-              hint: const Text('Pferd wählen...'),
+            data: (owners) => DropdownButtonFormField<int>(
+              value: _selectedOwnerId,
+              hint: const Text('Kunde wählen...'),
               decoration: const InputDecoration(),
-              items: horses.map((h) => DropdownMenuItem(
-                    value: h.horse.id,
-                    child: Text('${h.horse.name} (${h.owner.name})'),
+              items: owners.map((o) => DropdownMenuItem(
+                    value: o.id,
+                    child: Text(o.name),
                   )).toList(),
-              onChanged: (v) => setState(() => _selectedHorseId = v),
+              onChanged: (v) => setState(() => _selectedOwnerId = v),
             ),
           ),
           const SizedBox(height: 16),
@@ -192,6 +206,20 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
           ),
           const SizedBox(height: 16),
 
+          // Einnahmen
+          Text('Einnahmen', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _euroField('Anfahrt', _einnahmeAnfahrt)),
+              const SizedBox(width: 8),
+              Expanded(child: _euroField('Pro Tier', _einnahmeProTier)),
+              const SizedBox(width: 8),
+              Expanded(child: _euroField('Trinkgeld', _einnahmeTrinkgeld)),
+            ],
+          ),
+          const SizedBox(height: 16),
+
           // Notizen
           Text('Notizen', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 6),
@@ -208,6 +236,25 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _euroField(String label, TextEditingController ctrl) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant)),
+        const SizedBox(height: 4),
+        TextFormField(
+          controller: ctrl,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            suffixText: '€',
+            hintText: '0.00',
+            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          ),
+        ),
+      ],
     );
   }
 
@@ -228,10 +275,4 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
       ),
     );
   }
-}
-
-class _HorseWithOwner {
-  final Horse horse;
-  final Owner owner;
-  _HorseWithOwner(this.horse, this.owner);
 }

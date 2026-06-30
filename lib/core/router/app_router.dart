@@ -11,6 +11,7 @@ import '../../features/horses/horse_detail_screen.dart';
 import '../../features/treatments/treatment_form_screen.dart';
 import '../../features/appointments/appointments_screen.dart';
 import '../../features/appointments/appointment_form_screen.dart';
+import '../../features/settings/settings_screen.dart';
 import '../db/database.dart';
 
 final _rootNavKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -36,6 +37,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/appointments',
             pageBuilder: (c, s) => const NoTransitionPage(child: AppointmentsScreen()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (c, s) => const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
       ),
@@ -88,7 +93,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (c, s) {
           final extra = s.extra as Map<String, dynamic>?;
           return AppointmentFormScreen(
-            preselectedHorseId: extra?['horseId'] as int?,
+            preselectedOwnerId: extra?['ownerId'] as int?,
             preselectedDate: extra?['date'] as DateTime?,
           );
         },
@@ -111,6 +116,7 @@ class AppShell extends StatelessWidget {
   static int _locationToIndex(String location) {
     if (location.startsWith('/owners')) return 1;
     if (location.startsWith('/appointments')) return 2;
+    if (location.startsWith('/settings')) return 3;
     return 0;
   }
 
@@ -131,12 +137,15 @@ class AppShell extends StatelessWidget {
               context.go('/owners');
             case 2:
               context.go('/appointments');
+            case 3:
+              context.go('/settings');
           }
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.people_outlined), selectedIcon: Icon(Icons.people), label: 'Kunden'),
           NavigationDestination(icon: Icon(Icons.calendar_month_outlined), selectedIcon: Icon(Icons.calendar_month), label: 'Termine'),
+          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Einstellungen'),
         ],
       ),
     );

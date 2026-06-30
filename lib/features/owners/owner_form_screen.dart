@@ -22,6 +22,7 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
   late final TextEditingController _email;
   late final TextEditingController _address;
   late final TextEditingController _notes;
+  late String _kategorie;
   bool _saving = false;
 
   @override
@@ -33,6 +34,7 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
     _email = TextEditingController(text: o?.email ?? '');
     _address = TextEditingController(text: o?.address ?? '');
     _notes = TextEditingController(text: o?.notes ?? '');
+    _kategorie = o?.kategorie ?? 'B';
   }
 
   @override
@@ -57,6 +59,7 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
         email: Value(_email.text.trim().isEmpty ? null : _email.text.trim()),
         address: Value(_address.text.trim().isEmpty ? null : _address.text.trim()),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
+        kategorie: Value(_kategorie),
       ));
     } else {
       await db.updateOwner(OwnersCompanion(
@@ -66,6 +69,7 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
         email: Value(_email.text.trim().isEmpty ? null : _email.text.trim()),
         address: Value(_address.text.trim().isEmpty ? null : _address.text.trim()),
         notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
+        kategorie: Value(_kategorie),
         isArchived: Value(widget.owner!.isArchived),
         createdAt: Value(widget.owner!.createdAt),
       ));
@@ -108,6 +112,10 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
             _field('Adresse', _address, maxLines: 2),
             const SizedBox(height: 12),
             _field('Notizen', _notes, maxLines: 4),
+            const SizedBox(height: 16),
+            Text('Kategorie', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _KategorieSelector(value: _kategorie, onChanged: (v) => setState(() => _kategorie = v)),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _saving ? null : _save,
@@ -139,6 +147,41 @@ class _OwnerFormScreenState extends ConsumerState<OwnerFormScreen> {
           decoration: const InputDecoration(),
         ),
       ],
+    );
+  }
+}
+
+class _KategorieSelector extends StatelessWidget {
+  final String value;
+  final ValueChanged<String> onChanged;
+  const _KategorieSelector({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<String>(
+      segments: const [
+        ButtonSegment(
+          value: 'A',
+          label: Text('A — Freundlich'),
+          icon: Icon(Icons.sentiment_very_satisfied_outlined),
+        ),
+        ButtonSegment(
+          value: 'B',
+          label: Text('B — Neutral'),
+          icon: Icon(Icons.sentiment_neutral_outlined),
+        ),
+        ButtonSegment(
+          value: 'C',
+          label: Text('C — Schwierig'),
+          icon: Icon(Icons.sentiment_very_dissatisfied_outlined),
+        ),
+      ],
+      selected: {value},
+      onSelectionChanged: (s) => onChanged(s.first),
+      style: SegmentedButton.styleFrom(
+        selectedBackgroundColor: AppColors.primary.withValues(alpha: 0.15),
+        selectedForegroundColor: AppColors.primary,
+      ),
     );
   }
 }

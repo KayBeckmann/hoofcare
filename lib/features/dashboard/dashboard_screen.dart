@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/db/database.dart';
 import '../../core/db/providers.dart';
 import '../../core/theme/app_theme.dart';
+import '../../features/settings/settings_screen.dart';
 import '../../shared/widgets/status_chip.dart';
+
+final _benutzernameProvider = FutureProvider<String?>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(kBenutzernamePref);
+});
 
 final _dashboardStatsProvider = FutureProvider<_DashStats>((ref) async {
   final db = ref.watch(databaseProvider);
   final ownerCount = (await db.getAllOwners()).length;
-  final horseCount = await db.countAllHorses();
+  final animalCount = await db.countAllHorses();
   final apptCount = await db.countAppointmentsThisMonth();
-  return _DashStats(ownerCount, horseCount, apptCount);
+  return _DashStats(ownerCount, animalCount, apptCount);
 });
 
 final _nextAppointmentProvider = FutureProvider<_NextApptInfo?>((ref) async {
@@ -21,9 +28,8 @@ final _nextAppointmentProvider = FutureProvider<_NextApptInfo?>((ref) async {
   final appts = await db.getUpcomingAppointments(limit: 1);
   if (appts.isEmpty) return null;
   final appt = appts.first;
-  final horse = await db.getHorse(appt.horseId);
-  final owner = await db.getOwner(horse.ownerId);
-  return _NextApptInfo(appt, horse, owner);
+  final owner = await db.getOwner(appt.ownerId);
+  return _NextApptInfo(appt, owner);
 });
 
 final _recentActivityProvider = FutureProvider<List<_ActivityItem>>((ref) async {
@@ -32,11 +38,11 @@ final _recentActivityProvider = FutureProvider<List<_ActivityItem>>((ref) async 
   final items = <_ActivityItem>[];
 
   for (final owner in owners) {
-    final horses = await db.getHorsesForOwner(owner.id);
-    for (final horse in horses) {
-      final last = await db.getLastTreatmentForHorse(horse.id);
+    final animals = await db.getHorsesForOwner(owner.id);
+    for (final animal in animals) {
+      final last = await db.getLastTreatmentForHorse(animal.id);
       if (last != null) {
-        items.add(_ActivityItem(horse: horse, owner: owner, treatment: last));
+        items.add(_ActivityItem(animal: animal, owner: owner, treatment: last));
       }
     }
   }
@@ -55,7 +61,7 @@ class DashboardScreen extends ConsumerWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: _buildHeader(context)),
+            SliverToBoxAdapter(child: _Header()),
             SliverToBoxAdapter(child: _NextAppointmentCard()),
             SliverToBoxAdapter(child: _StatsRow()),
             SliverToBoxAdapter(child: _RecentActivity()),
@@ -65,11 +71,16 @@ class DashboardScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context) {
+class _Header extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
     final hour = now.hour;
     final greeting = hour < 12 ? 'Guten Morgen' : hour < 18 ? 'Guten Tag' : 'Guten Abend';
+    final nameAsync = ref.watch(_benutzernameProvider);
+    final name = nameAsync.valueOrNull;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
@@ -80,7 +91,7 @@ class DashboardScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  greeting,
+                  name != null && name.isNotEmpty ? '$greeting, $name' : greeting,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.onSurfaceVariant,
                       ),
@@ -123,6 +134,7 @@ class _NextAppointmentCard extends ConsumerWidget {
   Widget _buildCard(BuildContext context, _NextApptInfo info) {
     final fmt = DateFormat('dd.MM.yyyy, HH:mm');
     final isToday = _isToday(info.appt.scheduledAt);
+    final total = info.appt.einnahmeAnfahrt + info.appt.einnahmeProTier + info.appt.einnahmeTrinkgeld;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,15 +163,21 @@ class _NextAppointmentCard extends ConsumerWidget {
                 text: isToday ? 'Heute, ${DateFormat('HH:mm').format(info.appt.scheduledAt)} Uhr' : fmt.format(info.appt.scheduledAt),
               ),
               const SizedBox(height: 6),
-              _InfoRow(icon: Icons.pets, text: info.horse.name),
-              const SizedBox(height: 6),
               _InfoRow(icon: Icons.person_outline, text: info.owner.name),
+              if (info.owner.address != null) ...[
+                const SizedBox(height: 6),
+                _InfoRow(icon: Icons.location_on_outlined, text: info.owner.address!),
+              ],
+              if (total > 0) ...[
+                const SizedBox(height: 6),
+                _InfoRow(icon: Icons.euro_outlined, text: '${total.toStringAsFixed(2)} €'),
+              ],
               const SizedBox(height: 14),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => context.push('/horses/${info.horse.id}'),
-                  child: const Text('Details ansehen'),
+                  onPressed: () => context.push('/owners/${info.owner.id}'),
+                  child: const Text('Kundendetails ansehen'),
                 ),
               ),
             ],
@@ -236,7 +254,7 @@ class _StatsRow extends ConsumerWidget {
           children: [
             Expanded(child: _StatCard(label: 'Kunden', value: s.ownerCount, icon: Icons.people_outline, onTap: () => context.go('/owners'))),
             const SizedBox(width: 12),
-            Expanded(child: _StatCard(label: 'Pferde', value: s.horseCount, icon: Icons.pets, color: AppColors.secondary)),
+            Expanded(child: _StatCard(label: 'Tiere', value: s.animalCount, icon: Icons.pets, color: AppColors.secondary)),
             const SizedBox(width: 12),
             Expanded(child: _StatCard(label: 'Termine (Monat)', value: s.apptCount, icon: Icons.calendar_month_outlined, onTap: () => context.go('/appointments'))),
           ],
@@ -367,7 +385,7 @@ class _ActivityTile extends StatelessWidget {
     final chipLabel = item.treatment.treatmentType == 'Akutbehandlung' ? 'Notfall' : item.treatment.treatmentType;
 
     return GestureDetector(
-      onTap: () => context.push('/horses/${item.horse.id}'),
+      onTap: () => context.push('/horses/${item.animal.id}'),
       child: Container(
         margin: const EdgeInsets.only(bottom: 2),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -387,7 +405,7 @@ class _ActivityTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.horse.name,
+                    item.animal.name,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 2),
@@ -426,21 +444,20 @@ class _ActivityTile extends StatelessWidget {
 
 class _DashStats {
   final int ownerCount;
-  final int horseCount;
+  final int animalCount;
   final int apptCount;
-  _DashStats(this.ownerCount, this.horseCount, this.apptCount);
+  _DashStats(this.ownerCount, this.animalCount, this.apptCount);
 }
 
 class _NextApptInfo {
   final Appointment appt;
-  final Horse horse;
   final Owner owner;
-  _NextApptInfo(this.appt, this.horse, this.owner);
+  _NextApptInfo(this.appt, this.owner);
 }
 
 class _ActivityItem {
-  final Horse horse;
+  final Horse animal;
   final Owner owner;
   final Treatment treatment;
-  _ActivityItem({required this.horse, required this.owner, required this.treatment});
+  _ActivityItem({required this.animal, required this.owner, required this.treatment});
 }
