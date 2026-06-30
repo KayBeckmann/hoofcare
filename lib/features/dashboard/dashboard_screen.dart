@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/db/database.dart';
 import '../../core/db/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../shared/widgets/status_chip.dart';
-
-final _benutzernameProvider = FutureProvider<String?>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(kBenutzernamePref);
-});
 
 final _dashboardStatsProvider = FutureProvider<_DashStats>((ref) async {
   final db = ref.watch(databaseProvider);
@@ -79,7 +73,7 @@ class _Header extends ConsumerWidget {
     final now = DateTime.now();
     final hour = now.hour;
     final greeting = hour < 12 ? 'Guten Morgen' : hour < 18 ? 'Guten Tag' : 'Guten Abend';
-    final nameAsync = ref.watch(_benutzernameProvider);
+    final nameAsync = ref.watch(benutzernameProvider);
     final name = nameAsync.valueOrNull;
 
     return Padding(
